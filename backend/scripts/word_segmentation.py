@@ -203,53 +203,6 @@ class WordSegmenter:
             
             return words
     
-
-    # def segment_from_mtus(self, mtus: List[str]) -> List[str]:
-    #     """
-    #     Segment MTUs into words using Longest Matching.
-        
-    #     Algorithm (from Section 3.3.3):
-    #     1. Process 6 MTUs at a time
-    #     2. Try to match longest word in dictionary
-    #     3. Apply pattern rules to validate
-    #     4. Move to next unprocessed MTU
-    #     """
-    #     if not mtus:
-    #         return []
-        
-    #     words = []
-    #     i = 0
-    #     n = len(mtus)
-        
-    #     while i < n:
-    #         # Take up to 6 MTUs as a window
-    #         window_size = min(6, n - i)
-    #         best_match = None
-    #         best_length = 0
-            
-    #         # Try matching from longest to shortest
-    #         for length in range(window_size, 0, -1):
-    #             candidate_mtus = mtus[i:i+length]
-    #             candidate_word = "".join(candidate_mtus)
-                
-    #             # Check if it's in dictionary
-    #             if self.dictionary.contains(candidate_word):
-    #                 # Validate with pattern rules
-    #                 if self.pattern_rules.matches_pattern(candidate_word):
-    #                     best_match = candidate_word
-    #                     best_length = length
-    #                     break
-            
-    #         # If no dictionary match, take single MTU
-    #         if best_match is None:
-    #             best_match = mtus[i]
-    #             best_length = 1
-            
-    #         words.append(best_match)
-    #         i += best_length
-        
-    #     return words
-    
     def segment_text(self, text: str, mtu_crf) -> List[str]:
         """
         Segment raw text into words.
@@ -271,7 +224,6 @@ class WordSegmenter:
         words = self.segment_from_mtus(mtus)
         
         return words
-
 
 # Example usage and testing
 if __name__ == "__main__":

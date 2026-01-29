@@ -1,163 +1,3 @@
-# """
-# Complete Thai Word Segmentation Pipeline
-# Combines: MTU CRF + Word Segmentation
-
-# Usage:
-#     python complete_pipeline.py
-# """
-
-# import pickle
-# import sys
-# from typing import List
-
-# # Import components
-# try:
-#     from crf_mtu_inference import load_model, segment_text_to_mtus, format_mtus
-#     from word_segmentation import ThaiDictionary, WordSegmenter
-# except ImportError:
-#     print("Error: Make sure crf_mtu_inference.py and word_segmentation.py are in the same directory")
-#     sys.exit(1)
-
-
-# class ThaiTextSegmenter:
-#     """
-#     Complete Thai text segmentation pipeline.
-    
-#     Pipeline:
-#     Text → MTU (CRF) → Words (Longest Matching + Rules)
-#     """
-    
-#     def __init__(self, mtu_model_path: str, dictionary: ThaiDictionary = None):
-#         """
-#         Initialize the segmenter.
-        
-#         Args:
-#             mtu_model_path: Path to trained MTU CRF model
-#             dictionary: ThaiDictionary instance (creates basic one if None)
-#         """
-#         print("🔧 Initializing Thai Text Segmenter...")
-        
-#         # Load MTU CRF model
-#         print(f"   Loading MTU model from: {mtu_model_path}")
-#         self.mtu_crf = load_model(mtu_model_path)
-#         print("   ✓ MTU model loaded")
-        
-#         # Initialize dictionary
-#         if dictionary is None:
-#             print("   Loading basic Thai dictionary...")
-#             dictionary = ThaiDictionary()
-#             dictionary.load_basic_words()
-#             print(f"   ✓ Dictionary loaded ({len(dictionary.words)} words)")
-        
-#         # Initialize word segmenter
-#         self.word_segmenter = WordSegmenter(dictionary)
-        
-#         print("✅ Segmenter ready!\n")
-    
-#     def segment(self, text: str, show_mtus: bool = False) -> List[str]:
-#         """
-#         Segment Thai text into words.
-        
-#         Args:
-#             text: Input Thai text
-#             show_mtus: If True, also print MTU segmentation
-        
-#         Returns:
-#             List of segmented words
-#         """
-#         # Step 1: Segment into MTUs
-#         # mtus_nested = segment_text_to_mtus(text, self.mtu_crf)
-#         mtus_nested, _, _ = segment_text_to_mtus(text, self.mtu_crf)
-#         mtus = ["".join(mtu) for mtu in mtus_nested]
-        
-#         if show_mtus:
-#             print(f"   MTUs: {' | '.join(mtus)}")
-        
-#         # Step 2: Segment MTUs into words
-#         words = self.word_segmenter.segment_from_mtus(mtus)
-        
-#         return words
-
-
-# def main():
-#     """Main function to demonstrate the pipeline"""
-    
-#     print("=" * 80)
-#     print("Thai Word Segmentation - Complete Pipeline")
-#     print("MTU (CRF) → Words (Longest Matching + Pattern Rules)")
-#     print("=" * 80)
-#     print()
-    
-#     # Configuration
-#     MODEL_PATH = r"D:\project\word_wrapping\script\data\text_dataset\train_silver\mtu_crf_model.pkl"
-    
-#     try:
-#         # Initialize segmenter
-#         segmenter = ThaiTextSegmenter(MODEL_PATH)
-        
-#         # Test cases
-#         test_texts = [
-#             "สวัสดี",
-#             "กาแฟ",
-#             "การเชื่อมต่อ",
-#             "สิทธิลงมติรับหรือไม่รับร่างรัฐธรรมนูญฉบับปี",
-#             "นั่นมือถืออะไร",
-#             "ผ้าไหมลายสวยมาก",
-#             "สั่งกาแฟ",
-#         ]
-        
-#         print("=" * 80)
-#         print("Testing Word Segmentation:")
-#         print("=" * 80)
-        
-#         for text in test_texts:
-#             print(f"\n📝 Input: {text}")
-#             words = segmenter.segment(text, show_mtus=True)
-#             word_str = " | ".join(words)
-#             print(f"   Words: {word_str}")
-        
-#         print("\n" + "=" * 80)
-#         print("✅ Pipeline Complete!")
-#         print("=" * 80)
-        
-#         # Interactive mode
-#         print("\n" + "=" * 80)
-#         print("Interactive Mode - Type Thai text to segment (or 'quit' to exit)")
-#         print("=" * 80)
-        
-#         while True:
-#             try:
-#                 user_input = input("\n👉 Enter Thai text: ").strip()
-                
-#                 if user_input.lower() in ['quit', 'exit', 'q']:
-#                     print("Goodbye! 👋")
-#                     break
-                
-#                 if not user_input:
-#                     continue
-                
-#                 words = segmenter.segment(user_input, show_mtus=True)
-#                 word_str = " | ".join(words)
-#                 print(f"   📤 Result: {word_str}")
-                
-#             except KeyboardInterrupt:
-#                 print("\n\nGoodbye! 👋")
-#                 break
-#             except Exception as e:
-#                 print(f"   ❌ Error: {e}")
-    
-#     except FileNotFoundError:
-#         print(f"❌ Error: Model file not found at {MODEL_PATH}")
-#         print("   Please train the MTU model first using crf_mtu_trainer.py")
-#     except Exception as e:
-#         print(f"❌ Error: {e}")
-#         import traceback
-#         traceback.print_exc()
-
-
-# if __name__ == "__main__":
-#     main()
-
 """
 Complete Thai Word Segmentation + POS Tagging Pipeline
 Uses: MTU CRF + LST20 Dictionary + POS Tags
@@ -169,6 +9,8 @@ Usage:
 import pickle
 import sys
 from typing import List, Tuple
+from utils.features import load_model
+import sklearn_crfsuite
 
 # Import components
 try:
@@ -192,10 +34,6 @@ class ThaiTextSegmenterWithPOS:
     """
     
     def __init__(self, mtu_model_path: str, dictionary_path: str):
-    #     self.compounds = {
-    #     ("รัฐ", "ธรรมนูญ"): "รัฐธรรมนูญ",
-    # }
-
         """
         Initialize the segmenter with POS tagging.
         
@@ -219,19 +57,6 @@ class ThaiTextSegmenterWithPOS:
         self.word_segmenter = WordSegmenter(self.dictionary)
         
         print("✅ Segmenter ready!\n")
-
-    # def merge_compounds(self, words: List[str]) -> List[str]:
-    #     merged = []
-    #     i = 0
-    #     while i < len(words):
-    #         if i + 1 < len(words) and (words[i], words[i+1]) in self.compounds:
-    #             merged.append(self.compounds[(words[i], words[i+1])])
-    #             i += 2
-    #         else:
-    #             merged.append(words[i])
-    #             i += 1
-    #     return merged
-
     
     def segment(self, text: str, show_mtus: bool = False) -> List[str]:
         """
@@ -292,8 +117,19 @@ def main():
     print()
     
     # Configuration
-    MODEL_PATH = r"D:\project\word_wrapping\script\data\text_dataset\train_silver\mtu_crf_model.pkl"
-    DICT_PATH = r"D:\project\word_wrapping\script\data\text_dataset\train_silver\lst20_dictionary.pkl"
+    # MODEL_PATH = r"D:\project\word_wrapping\script\data\text_dataset\train_silver\mtu_crf_model.pkl"
+    # DICT_PATH = r"D:\project\word_wrapping\script\data\text_dataset\train_silver\lst20_dictionary.pkl"
+    # Get the directory where this script is located
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    # Build path relative to script location
+    # Go up one level from scripts/ to backend/, then into models/
+    MODEL_PATH = os.path.join(SCRIPT_DIR, "..", "models", "mtu_crf_model.pkl")
+    DICT_PATH =  os.path.join(SCRIPT_DIR, "..", "models", "lst20_dictionary.pkl")
+
+    # Or normalize the path
+    MODEL_PATH = os.path.normpath(MODEL_PATH)
+    DICT_PATH = os.path.normpath(DICT_PATH)
     
     try:
         # Initialize segmenter

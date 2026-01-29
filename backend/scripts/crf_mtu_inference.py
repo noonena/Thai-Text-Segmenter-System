@@ -5,116 +5,23 @@ Use the trained CRF model to segment Thai text into MTUs
 
 import pickle
 from typing import List, Dict
-
-# Same character classification as training
-CONSONANTS = set("ก ข ฃ ค ฅ ฆ ง จ ฉ ช ซ ฌ ญ ฎ ฏ ฐ ฑ ฒ ณ ด ต ถ ท ธ น บ ป ผ ฝ พ ฟ ภ ม ย ร ล ว ศ ษ ส ห ฬ อ ฮ".split())
-NON_SUFFIX_CONSONANTS = set("ฃ ฅ ฆ ฉ ช ซ ฌ ญ ฑ ฒ ณ ต ผ ฝ ฟ ภ".split())
-FRONT_VOWELS = set("เ แ โ ไ ใ".split())
-UPPER_VOWELS = set("ิ ี ึ ื".split())
-SPECIAL_VOWELS = set("ั ็".split())
-REAR_VOWELS = set("า ๅ ว ะ ำ".split())
-LOWER_VOWELS = set("ุ ู".split())
-TONES = set("่ ้ ๊ ๋".split())
-KARAN = "์"
-SPECIAL_SYMBOLS = set("ๆ ฯ ํ".split())
-DIGITS = set("0123456789๐๑๒๓๔๕๖๗๘๙")
-
-
-def get_char_type(ch: str) -> str:
-    """Get character type"""
-    if ch in CONSONANTS: return "C"
-    if ch in NON_SUFFIX_CONSONANTS: return "N"
-    if ch in FRONT_VOWELS: return "F"
-    if ch in UPPER_VOWELS: return "U"
-    if ch in SPECIAL_VOWELS: return "S"
-    if ch in REAR_VOWELS: return "B"
-    if ch in LOWER_VOWELS: return "L"
-    if ch in TONES: return "T"
-    if ch == KARAN: return "K"
-    if ch in SPECIAL_SYMBOLS: return "O"
-    if ch in DIGITS: return "D"
-    if ch in (" ", "\t"): return "G"
-    return "Q"
-
-
-def char2features(chars: List[str], i: int) -> Dict[str, any]:
-    """Extract features for character at position i"""
-    char = chars[i]
-    features = {
-        'bias': 1.0,
-        'char': char,
-        'char_type': get_char_type(char),
-    }
-    
-    # Unigram features C[-3:3]
-    for offset in [-3, -2, -1, 0, 1, 2, 3]:
-        pos = i + offset
-        if 0 <= pos < len(chars):
-            features[f'char[{offset:+d}]'] = chars[pos]
-            features[f'type[{offset:+d}]'] = get_char_type(chars[pos])
-        else:
-            features[f'char[{offset:+d}]'] = 'BOS' if pos < 0 else 'EOS'
-            features[f'type[{offset:+d}]'] = 'BOUNDARY'
-    
-    # Bigram features
-    if i > 0:
-        features['char[-1,0]'] = chars[i-1] + char
-        features['type[-1,0]'] = get_char_type(chars[i-1]) + get_char_type(char)
-    
-    if i < len(chars) - 1:
-        features['char[0,+1]'] = char + chars[i+1]
-        features['type[0,+1]'] = get_char_type(char) + get_char_type(chars[i+1])
-    
-    return features
-
-
-def load_model(model_path: str):
-    """Load trained CRF model"""
-    with open(model_path, 'rb') as f:
-        crf = pickle.load(f)
-    return crf
-
-def segment_text_to_mtus(text: str, crf):
-    chars = list(text)
-    features = [char2features(chars, i) for i in range(len(chars))]
-    labels = crf.predict([features])[0]
-
-    mtus = []
-    current_mtu = []
-    current_labels = []
-    mtu_labels = []  # store BMES per MTU
-
-    for char, label in zip(chars, labels):
-        if label == 'S':
-            mtus.append([char])
-            mtu_labels.append(['S'])
-        elif label == 'B':
-            current_mtu = [char]
-            current_labels = ['B']
-        elif label in ['M', 'E']:
-            current_mtu.append(char)
-            current_labels.append(label)
-            if label == 'E':
-                mtus.append(current_mtu)
-                mtu_labels.append(current_labels)
-                current_mtu = []
-                current_labels = []
-
-    if current_mtu:
-        mtus.append(current_mtu)
-        mtu_labels.append(current_labels)
-
-    return mtus, labels, mtu_labels
-
-def format_mtus(mtus: List[List[str]]) -> str:
-    """Format MTUs for display"""
-    return ' | '.join([''.join(mtu) for mtu in mtus])
-
-
+import os
+from utils.features import format_mtus, segment_text_to_mtus, load_model
+from utils.char_utils import get_char_type
 # Example usage
 if __name__ == "__main__":
-    MODEL_PATH = r"D:\project\word_wrapping\script\data\text_dataset\train_silver\mtu_crf_model.pkl"
-    
+    # MODEL_PATH = r"D:\project\word_wrapping\script\data\text_dataset\train_silver\mtu_crf_model.pkl"
+   
+    # Get the directory where this script is located
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    # Build path relative to script location
+    # Go up one level from scripts/ to backend/, then into models/
+    MODEL_PATH = os.path.join(SCRIPT_DIR, "..", "models", "mtu_crf_model.pkl")
+
+    # Or normalize the path
+    MODEL_PATH = os.path.normpath(MODEL_PATH)
+
     # Load model
     print("Loading CRF model...")
     crf = load_model(MODEL_PATH)

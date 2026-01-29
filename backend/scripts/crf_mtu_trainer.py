@@ -17,46 +17,9 @@ from pathlib import Path
 from typing import List, Tuple, Dict
 import sklearn_crfsuite
 from sklearn_crfsuite import metrics
-
-# Character type classification (Table 3.1 from dissertation)
-CONSONANTS = set("ก ข ฃ ค ฅ ฆ ง จ ฉ ช ซ ฌ ญ ฎ ฏ ฐ ฑ ฒ ณ ด ต ถ ท ธ น บ ป ผ ฝ พ ฟ ภ ม ย ร ล ว ศ ษ ส ห ฬ อ ฮ".split())
-NON_SUFFIX_CONSONANTS = set("ฃ ฅ ฆ ฉ ช ซ ฌ ญ ฑ ฒ ณ ต ผ ฝ ฟ ภ".split())
-FRONT_VOWELS = set("เ แ โ ไ ใ".split())
-UPPER_VOWELS = set("ิ ี ึ ื".split())
-SPECIAL_VOWELS = set("ั ็".split())
-REAR_VOWELS = set("า ๅ ว ะ ำ".split())
-LOWER_VOWELS = set("ุ ู".split())
-TONES = set("่ ้ ๊ ๋".split())
-KARAN = "์"
-SPECIAL_SYMBOLS = set("ๆ ฯ ํ".split())
-# DIGITS = set("0123456789๐๑๒๓๔๕๖๗๘๙")
-DIGITS = set("0123456789๐๑๒๓๔๕๖๗๘๙")
-
-
-def get_char_type(ch: str) -> str:
-    """Get character type based on Table 3.1"""
-    if ch in CONSONANTS: return "C"
-    if ch in NON_SUFFIX_CONSONANTS: return "N"
-    if ch in FRONT_VOWELS: return "F"
-    if ch in UPPER_VOWELS: return "U"
-    if ch in SPECIAL_VOWELS: return "S"
-    if ch in REAR_VOWELS: return "B"
-    if ch in LOWER_VOWELS: return "L"
-    if ch in TONES: return "T"
-    if ch == KARAN: return "K"
-    if ch in SPECIAL_SYMBOLS: return "O"
-    if ch in DIGITS: return "D"
-    if ch in (" ", "\t"): return "G"
-    return "Q"  # Other symbols
+from .utils/char_utils import get_char_type
 
 def word_to_mtu_labels(word: str) -> List[str]:
-    """
-    Convert a word to character-level MTU labels (B/M/E/S)
-    Based kaon the 17 rules from Kannir Paripremkul's dissertation
-    
-    This generates training labels by applying linguistic rules.
-    The CRF will then learn patterns from these rule-based labels.
-    """
     chars = list(word)
     n = len(chars)
     
@@ -187,9 +150,6 @@ def word_to_mtu_labels(word: str) -> List[str]:
 
                 i = j
                 continue
-
-
-
             
             while j < n:
                 jt = get_char_type(chars[j])
@@ -274,40 +234,6 @@ def word_to_mtu_labels(word: str) -> List[str]:
     
     return labels
 
-
-def char2features(chars: List[str], i: int) -> Dict[str, any]:
-    """
-    Extract features for character at position i
-    Based on Table 3.4: Feature Template for Minimum Text Unit Extraction
-    Uses unigram features C[-3:3] and bigram C[-1,1]
-    """
-    char = chars[i]
-    features = {
-        'bias': 1.0,
-        'char': char,
-        'char_type': get_char_type(char),
-    }
-    
-    # Unigram features C[-3:3]
-    for offset in [-3, -2, -1, 0, 1, 2, 3]:
-        pos = i + offset
-        if 0 <= pos < len(chars):
-            features[f'char[{offset:+d}]'] = chars[pos]
-            features[f'type[{offset:+d}]'] = get_char_type(chars[pos])
-        else:
-            features[f'char[{offset:+d}]'] = 'BOS' if pos < 0 else 'EOS'
-            features[f'type[{offset:+d}]'] = 'BOUNDARY'
-    
-    # Bigram feature C[-1,1]
-    if i > 0:
-        features['char[-1,0]'] = chars[i-1] + char
-        features['type[-1,0]'] = get_char_type(chars[i-1]) + get_char_type(char)
-    
-    if i < len(chars) - 1:
-        features['char[0,+1]'] = char + chars[i+1]
-        features['type[0,+1]'] = get_char_type(char) + get_char_type(chars[i+1])
-    
-    return features
 
 
 def extract_features_and_labels(text: str) -> Tuple[List[Dict], List[str]]:
