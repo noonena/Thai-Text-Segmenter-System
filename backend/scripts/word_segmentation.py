@@ -173,6 +173,31 @@ class WordSegmenter:
     def __init__(self, dictionary: ThaiDictionary):
         self.dictionary = dictionary
         self.pattern_rules = PatternRules()
+    
+    def is_number(self, s: str) -> bool:
+        thai_digits = "๐๑๒๓๔๕๖๗๘๙"
+        return s.isdigit() or all(c in thai_digits for c in s)
+
+
+    def merge_number_classifier(self, words):
+        merged = []
+        i = 0
+        classifiers = ['ปี', 'ปีนี้', 'คน', 'วัน', 'เดือน', 'ตัว']
+
+        while i < len(words):
+            if (
+                i < len(words) - 1
+                and self.is_number(words[i])
+                and words[i+1] in classifiers
+            ):
+                merged.append(words[i] + words[i+1])
+                i += 2
+            else:
+                merged.append(words[i])
+                i += 1
+
+        return merged
+
 
     def segment_from_mtus(self, mtus: List[str]) -> List[str]:
             if not mtus:
@@ -200,7 +225,10 @@ class WordSegmenter:
                 if not matched:
                     words.append(mtus[i])
                     i += 1
-            
+
+            # ✅ ADD THIS LINE
+            words = self.merge_number_classifier(words)
+
             return words
     
     def segment_text(self, text: str, mtu_crf) -> List[str]:

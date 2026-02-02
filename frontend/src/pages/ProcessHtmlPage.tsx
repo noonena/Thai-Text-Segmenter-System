@@ -1,18 +1,51 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FilePlus, FileCode, Play, Trash2, Loader2 } from "lucide-react";
+import { saveToHistory } from "./HistoryPage";
 
-const API_ENDPOINT = "https://your-api-gateway-url.amazonaws.com/prod/process";
+/**
+ * 👉 Change this to your backend URL
+ * Local FastAPI example:
+ * 
+ */
+const API_ENDPOINT = "http://localhost:8000/api/process-html";
+
+/* =======================
+   Types
+   ======================= */
 
 type Props = {
-  settings: { tag: "span" | "div"; cssClass: string };
+  settings: {
+    tag: "span" | "div";
+    cssClass: string;
+  };
 };
+
+type ApiSuccessResponse = {
+  success: true;
+  wrapped_html: string;
+  segment_count?: number;  // Add this line
+};
+
+type ApiErrorResponse = {
+  success?: false;
+  detail?: string;
+  error?: string;
+};
+
+/* =======================
+   Component
+   ======================= */
 
 export default function ProcessHtmlPage({ settings }: Props) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [rawHtml, setRawHtml] = useState<string>("");
-  const [processing, setProcessing] = useState(false);
+  const [processing, setProcessing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  /* =======================
+     Dropzone
+     ======================= */
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -20,8 +53,7 @@ export default function ProcessHtmlPage({ settings }: Props) {
 
     const reader = new FileReader();
     reader.onload = () => {
-      const htmlText = reader.result as string;
-      setRawHtml(htmlText);
+      setRawHtml(reader.result as string);
       setSelectedFile(file);
       setError(null);
     };
@@ -34,6 +66,10 @@ export default function ProcessHtmlPage({ settings }: Props) {
     multiple: false,
   });
 
+  /* =======================
+     Run processing
+     ======================= */
+
   const handleRun = async () => {
     if (!rawHtml || !selectedFile) return;
 
@@ -41,7 +77,6 @@ export default function ProcessHtmlPage({ settings }: Props) {
     setError(null);
 
     try {
-      // Send to AWS Lambda for processing
       const response = await fetch(API_ENDPOINT, {
         method: "POST",
         headers: {
@@ -58,30 +93,49 @@ export default function ProcessHtmlPage({ settings }: Props) {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = (await response.json()) as ApiErrorResponse;
+        throw new Error(
+          errorData.detail ||
+            errorData.error ||
+            `HTTP error ${response.status}`
+        );
       }
 
-      const result = await response.json();
+      const result = (await response.json()) as ApiSuccessResponse;
 
-      if (result.success) {
-        // Download the wrapped HTML
-        const blob = new Blob([result.wrapped_html], {
-          type: "text/html;charset=utf-8",
-        });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = selectedFile.name.replace(/\.html?$/i, "") + "-wrapped.html";
-        a.click();
-        URL.revokeObjectURL(url);
-
-        console.log("✅ Processing complete!");
-      } else {
-        throw new Error(result.error || "Processing failed");
+      if (!result.success) {
+        throw new Error("Processing failed");
       }
+
+      // Count segments (estimate from wrapped HTML)
+      // const segmentCount = (result.wrapped_html.match(/<wbr><[^>]+>/g) || []).length;
+      // Get segment count from backend (most reliable)
+      const segmentCount = result.segment_count || 
+                          (result.wrapped_html.match(/<wbr>/gi) || []).length;
+
+      console.log("📊 Segment count:", segmentCount);
+      // Save to history
+      saveToHistory({
+        filename: selectedFile.name,
+        segments: segmentCount,
+        output: result.wrapped_html
+      });
+
+      // Download processed HTML
+      const blob = new Blob([result.wrapped_html], {
+        type: "text/html;charset=utf-8",
+      });
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download =
+        selectedFile.name.replace(/\.html?$/i, "") + "-wrapped.html";
+      a.click();
+      URL.revokeObjectURL(url);
     } catch (err) {
       console.error("❌ Error:", err);
-      setError(err instanceof Error ? err.message : "Unknown error occurred");
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setProcessing(false);
     }
@@ -93,6 +147,10 @@ export default function ProcessHtmlPage({ settings }: Props) {
     setError(null);
   };
 
+  /* =======================
+     Render
+     ======================= */
+
   return (
     <div className="h-full flex flex-col">
       <h1 className="px-8">Input File</h1>
@@ -103,7 +161,9 @@ export default function ProcessHtmlPage({ settings }: Props) {
         {...getRootProps({
           className:
             "flex-1 m-8 flex flex-col justify-center items-center rounded-lg border-2 border-dashed cursor-pointer " +
-            (isDragActive ? "border-black bg-gray-50" : "border-gray-300"),
+            (isDragActive
+              ? "border-black bg-gray-50"
+              : "border-gray-300"),
         })}
       >
         <input {...getInputProps()} />
@@ -128,20 +188,16 @@ export default function ProcessHtmlPage({ settings }: Props) {
             <>
               <FilePlus className="w-20 h-20 text-gray-400" />
               <span className="text-gray-500">
-                {isDragActive ? (
-                  "Drop the .html file here"
-                ) : (
-                  <>
-                    Drop a .html file or <u>select file</u>
-                  </>
-                )}
+                {isDragActive
+                  ? "Drop the .html file here"
+                  : "Drop a .html file or select file"}
               </span>
             </>
           )}
         </div>
       </div>
 
-      {/* ERROR MESSAGE */}
+      {/* ERROR */}
       {error && (
         <div className="mx-8 mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <p className="text-red-800 text-sm">❌ {error}</p>
@@ -150,27 +206,28 @@ export default function ProcessHtmlPage({ settings }: Props) {
 
       <hr className="w-full border-t border-gray-300 mt-4" />
 
-      {/* RUN / CLEAR */}
-      <div className="w-full px-8 py-4 flex justify-center sm:justify-start gap-4">
+      {/* ACTIONS */}
+      <div className="w-full px-8 py-4 flex gap-4">
         <button
           onClick={handleRun}
           disabled={!rawHtml || processing}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-black text-white hover:bg-neutral-600 active:bg-neutral-600 focus-visible:outline-offset-2 focus-visible:outline-black disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-black text-white disabled:bg-gray-400"
         >
           {processing ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <Play className="w-5 h-5" />
           )}
-          <span>{processing ? "Processing..." : "Run"}</span>
+          {processing ? "Processing..." : "Run"}
         </button>
+
         <button
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-400 text-slate-700 hover:bg-slate-100 hover:border-slate-500 active:bg-slate-200 focus-visible:outline-offset-2 focus-visible:outline-slate-500 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleClear}
           disabled={!selectedFile || processing}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-400 text-slate-700 disabled:opacity-50"
         >
           <Trash2 className="w-5 h-5" />
-          <span>Clear</span>
+          Clear
         </button>
       </div>
     </div>

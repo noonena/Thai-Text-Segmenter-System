@@ -259,7 +259,7 @@ function App() {
                 {page === "process" && inputMode === "html" && (
                   <ProcessHtmlPage settings={settings} />
                 )}
-                {page === "process" && inputMode === "text" && <ProcessTextPage />}
+                {page === "process" && inputMode === "text" && <ProcessTextPage settings={settings} />}
                 {page === "history" && <HistoryPage />}
                 {page === "stats" && <StatisticsPage />}
               </div>

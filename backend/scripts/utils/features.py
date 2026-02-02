@@ -1,6 +1,7 @@
-import pickle
-import sklearn_crfsuite
 from .char_utils import get_char_type
+import pickle
+import sys
+from typing import List, Dict
 
 def char2features(chars: List[str], i: int) -> Dict[str, any]:
     char = chars[i]

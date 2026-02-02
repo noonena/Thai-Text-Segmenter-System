@@ -17,7 +17,8 @@ from pathlib import Path
 from typing import List, Tuple, Dict
 import sklearn_crfsuite
 from sklearn_crfsuite import metrics
-from .utils/char_utils import get_char_type
+from utils.features import format_mtus, segment_text_to_mtus, load_model
+from utils.char_utils import get_char_type
 
 def word_to_mtu_labels(word: str) -> List[str]:
     chars = list(word)
