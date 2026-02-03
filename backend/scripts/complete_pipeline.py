@@ -255,17 +255,24 @@ def main():
     try:
         segmenter = ThaiTextSegmenterWithPOS(MTU_MODEL_PATH, DICT_PATH, POS_MODEL_PATH)
         
-        # Test
-        test_text = "ผมชอบมันฝรั่งทอด"
-        print("="*80)
-        print(f"Testing: {test_text}")
-        print("="*80)
+         # 🔹 Test cases
+        test_texts = [
+            "ผมชอบมันฝรั่งทอด",
+            "นั่นมือถืออะไร",
+            "ผ้าไหมลายสวยมาก",
+            "เที่ยวโอซาก้า"
+        ]
         
-        result = segmenter.segment_with_pos(test_text)
-        
-        print("\nResults:")
-        for word, pos in result:
-            print(f"  {word:15} → {pos}")
+        for text in test_texts:
+            print("=" * 80)
+            print(f"Testing: {text}")
+            print("=" * 80)
+            
+            result = segmenter.segment_with_pos(text)
+            
+            print("\nResults:")
+            for word, pos in result:
+                print(f"  {word:15} → {pos}")
         
         print("\n✅ Pipeline complete!")
         
@@ -274,8 +281,7 @@ def main():
         print("\nRequired files:")
         print(f"  1. MTU model: {MTU_MODEL_PATH}")
         print(f"  2. Dictionary: {DICT_PATH}")
-        print(f"  3. POS model: {POS_MODEL_PATH}")  # ✅ NEW!
-
+        print(f"  3. POS model: {POS_MODEL_PATH}")
 
 if __name__ == "__main__":
     main()
