@@ -5,7 +5,7 @@ Pipeline:
 Text
  → MTU Segmentation (CRF)
  → Syllable Segmentation (CRF)
- → Word Segmentation (Dictionary longest match)
+ → Word Segmentation (Viterbi with dictionary + context)
  → POS Tagging (CRF)
 """
 
@@ -46,7 +46,7 @@ sys.path.insert(0, UTILS_DIR)
 # =====================================================
 from lst20_dictionary_builder import LST20Dictionary
 from word_segmentation import WordSegmenter
-from features import segment_text_to_mtus_rules
+from crf_mtu_inference import segment_text_to_mtus
 
 
 class ThaiTextSegmenter:
@@ -60,7 +60,15 @@ class ThaiTextSegmenter:
         pos_model_path: str,
     ):
         print("Initializing Thai NLP Pipeline...")
-        print("MTU stage: using TCC rules directly (no model needed)")
+
+        # MTU stage uses TCC rules (no model needed)
+        if mtu_model_path and os.path.exists(mtu_model_path):
+            print(f"Loading MTU model: {mtu_model_path}")
+            with open(mtu_model_path, "rb") as f:
+                self.mtu_crf = pickle.load(f)
+        else:
+            print("MTU stage: using TCC rules (no model)")
+            self.mtu_crf = None
 
         print(f"Loading syllable model: {syllable_model_path}")
         with open(syllable_model_path, "rb") as f:
@@ -77,16 +85,26 @@ class ThaiTextSegmenter:
         print("Pipeline ready\n")
 
     # =====================================================
-    # MTU
+    # MTU (using TCC rules)
     # =====================================================
     def _segment_to_mtus(self, text: str) -> List[str]:
-        mtus_nested, _, _ = segment_text_to_mtus_rules(text)
-        return ["".join(mtu) for mtu in mtus_nested]
+        if not text or not text.strip():
+            return []
+        try:
+            # Use TCC rules (apply_tcc_rules) instead of CRF
+            from features import apply_tcc_rules
+            mtus = apply_tcc_rules(text)
+            return mtus
+        except Exception as e:
+            print(f"[WARN] MTU segmentation failed for '{text}': {e}")
+            return []
 
     # =====================================================
     # SYLLABLE
     # =====================================================
     def _segment_to_syllables(self, mtus: List[str]) -> List[str]:
+        if not mtus:
+            return []
         from syllable_features import extract_features_for_sentence
 
         features = extract_features_for_sentence(mtus)
@@ -140,12 +158,19 @@ class ThaiTextSegmenter:
         return result
 
     # =====================================================
-    # WORD
+    # WORD - Legacy method with syllable guidance
     # =====================================================
     def segment_words(self, text: str) -> List[str]:
-        mtus = self._segment_to_mtus(text)
-        syllables = self._segment_to_syllables(mtus)
-        return self.word_segmenter.segment_from_mtus_with_syllables(mtus, syllables)
+        if not text or not text.strip():
+            return []
+        
+        try:
+            mtus = self._segment_to_mtus(text)
+            syllables = self._segment_to_syllables(mtus)
+            return self.word_segmenter.segment_from_mtus_with_syllables(mtus, syllables)
+        except Exception as e:
+            print(f"[WARN] Word segmentation failed for '{text}': {e}")
+            return [text]  # Return original text as single word
 
     # =====================================================
     # WORD + POS + SYLLABLE
@@ -159,7 +184,7 @@ class ThaiTextSegmenter:
         # Syllable
         syllables = self._segment_to_syllables(mtus)
 
-        # Word
+        # Word (using syllable-guided segmentation)
         fixed_words = self.word_segmenter.segment_from_mtus_with_syllables(mtus, syllables)
 
         # POS tagging

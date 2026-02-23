@@ -1,5 +1,5 @@
 import { Search, Download } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 type HistoryItem = {
   id: string;

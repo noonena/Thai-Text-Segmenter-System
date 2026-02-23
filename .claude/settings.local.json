@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(venv/Scripts/python:*)",
+      "Bash(set:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(cd \"D:/project/ThaitextSegmentersystem/backend\" && PYTHONIOENCODING=utf-8 python scripts/nlp_utils/evaluate_pipeline.py 2>&1)",
+      "Bash(tail:*)",
+      "Bash(grep:*)",
+      "Bash(cd /d/project/ThaitextSegmentersystem/backend && PYTHONIOENCODING=utf-8 python scripts/nlp_utils/evaluate_pipeline.py 2>&1)",
+      "Bash(head:*)",
+      "Bash(curl:*)",
+      "Bash(grep LISTEN:*)",
+      "Bash(cd /d/project/ThaitextSegmentersystem/frontend && npx tsc --noEmit 2>&1)",
+      "Bash(netstat:*)",
+      "Bash(tasklist:*)",
+      "Bash(taskkill:*)"
+    ]
+  }
+}

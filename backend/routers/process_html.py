@@ -26,9 +26,9 @@ sys.path.insert(0, NLP_UTILS_DIR)
 sys.path.insert(0, MODELS_DIR)
 sys.path.insert(0, SCRIPTS_MODELS_DIR)
 
-print(f"🔍 BACKEND_DIR:    {BACKEND_DIR}")
-print(f"🔍 NLP_UTILS_DIR:  {NLP_UTILS_DIR}")
-print(f"🔍 complete_pipeline.py exists: {os.path.exists(os.path.join(NLP_UTILS_DIR, 'complete_pipeline.py'))}")
+print(f"[INFO] BACKEND_DIR:    {BACKEND_DIR}")
+print(f"[INFO] NLP_UTILS_DIR:  {NLP_UTILS_DIR}")
+print(f"[INFO] complete_pipeline.py exists: {os.path.exists(os.path.join(NLP_UTILS_DIR, 'complete_pipeline.py'))}")
 
 # =====================================================
 # Import pipeline AFTER path setup
@@ -36,9 +36,9 @@ print(f"🔍 complete_pipeline.py exists: {os.path.exists(os.path.join(NLP_UTILS
 try:
     from complete_pipeline import ThaiTextSegmenter
     HAS_PIPELINE = True
-    print("✅ complete_pipeline imported successfully")
+    print("[OK] complete_pipeline imported successfully")
 except ImportError as e:
-    print(f"⚠️  Could not import complete_pipeline: {e}")
+    print(f"[WARN] Could not import complete_pipeline: {e}")
     HAS_PIPELINE = False
 
 from fastapi import APIRouter, HTTPException
@@ -66,43 +66,45 @@ def get_segmenter():
     
     try:
         BASE_PATH = os.path.join(BACKEND_DIR, "models")
-        
+
+        MTU_MODEL      = os.path.join(BASE_PATH, "mtu_crf_model.pkl")
         SYLLABLE_MODEL = os.path.join(BASE_PATH, "syllable_crf_model.pkl")
         DICT_MODEL     = os.path.join(BASE_PATH, "lst20_dictionary.pkl")
         POS_MODEL      = os.path.join(BASE_PATH, "pos_crf_model.pkl")
 
-        print(f"🔍 Looking for models in: {BASE_PATH}")
+        print(f"[INFO] Looking for models in: {BASE_PATH}")
+        print(f"   mtu_crf_model.pkl      exists: {os.path.exists(MTU_MODEL)}")
         print(f"   syllable_crf_model.pkl exists: {os.path.exists(SYLLABLE_MODEL)}")
         print(f"   lst20_dictionary.pkl   exists: {os.path.exists(DICT_MODEL)}")
         print(f"   pos_crf_model.pkl      exists: {os.path.exists(POS_MODEL)}")
-        print(f"   MTU stage: TCC rules (no model file needed)")
 
         # Check missing models
         missing = []
+        if not os.path.exists(MTU_MODEL):      missing.append("mtu_crf_model.pkl")
         if not os.path.exists(SYLLABLE_MODEL): missing.append("syllable_crf_model.pkl")
         if not os.path.exists(DICT_MODEL):     missing.append("lst20_dictionary.pkl")
         if not os.path.exists(POS_MODEL):      missing.append("pos_crf_model.pkl")
-        
+
         if missing:
             raise HTTPException(
                 status_code=500,
                 detail=f"Missing model files: {', '.join(missing)}. Please train models first."
             )
-        
-        print("🚀 Initializing Thai NLP Pipeline...")
+
+        print("[INFO] Initializing Thai NLP Pipeline...")
         _segmenter = ThaiTextSegmenter(
-            None,           # MTU model path — unused, TCC rules handle this stage
+            MTU_MODEL,
             SYLLABLE_MODEL,
             DICT_MODEL,
             POS_MODEL
         )
-        print("✅ Pipeline initialized successfully")
+        print("[OK] Pipeline initialized successfully")
         return _segmenter
         
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Failed to initialize pipeline: {e}")
+        print(f"[ERROR] Failed to initialize pipeline: {e}")
         raise HTTPException(
             status_code=500,
             detail=f"Failed to initialize NLP pipeline: {str(e)}"
@@ -230,7 +232,7 @@ async def export_training_data(request: ExportTrainingRequest):
                 "timestamp": timestamp
             }, f, ensure_ascii=False, indent=2)
         
-        print(f"✅ Training data saved: {filepath}")
+        print(f"[OK] Training data saved: {filepath}")
         return {"success": True, "message": "Training data saved", "filepath": filepath}
         
     except Exception as e:
