@@ -708,56 +708,35 @@ class WordSegmenter:
     
     def segment_with_viterbi(self, mtus: List[str], syllables: List[str] = None) -> List[str]:
         """
-        Viterbi-based word segmentation.
-        
-        Uses syllables as primary unit (more meaningful than MTUs).
-        Falls back to MTUs if syllables not provided.
-        
-        Instead of greedy longest-match, this:
-        1. Generates all candidate words at each position
-        2. Uses Viterbi to find globally optimal path
-        3. Scores candidates using frequency, patterns, and context
+        Viterbi word segmentation.
+        Scores candidates using frequency + compound bonus so that
+        multi-unit dictionary words are preferred over their split parts.
         """
-        # Use syllables if available, otherwise MTUs
         units = syllables if syllables else mtus
         if not units:
             return []
-        
+
         n = len(units)
-        
-        # Viterbi tables
-        dp = [-float('inf')] * (n + 1)
-        back = {}  # position -> (prev_pos, word)
-        
-        dp[0] = 0.0  # Start position
-        
+
+        dp   = [-float('inf')] * (n + 1)
+        back = {}
+
+        dp[0] = 0.0
+
         for pos in range(n):
             if dp[pos] == -float('inf'):
                 continue
-            
-            # Get next units for boundary scoring
-            next_units = units[pos:pos+3] if pos < n else []
-            
-            # Get previous word for context
-            prev_word = None
-            for prev_pos, (prev_w, _) in back.items():
-                if prev_pos == pos:
-                    prev_word = prev_w
-                    break
-            
-            # Generate candidates starting at `pos`
+
             candidates = self._generate_candidates_from_units(units, pos)
-            
+
             for candidate, length in candidates:
                 next_pos = pos + length
-                
-                # Score this candidate
-                score = self._score_candidate_v2(
-                    candidate, pos, n, prev_word, next_units
+
+                word_score = self._score_candidate_v2(
+                    candidate, length, pos, n
                 )
-                
-                total_score = dp[pos] + score
-                
+                total_score = dp[pos] + word_score
+
                 if total_score > dp[next_pos]:
                     dp[next_pos] = total_score
                     back[next_pos] = (pos, candidate)
@@ -798,57 +777,29 @@ class WordSegmenter:
         return candidates
     
     def _score_candidate_v2(
-        self, 
-        candidate: str, 
-        position: int, 
+        self,
+        candidate: str,
+        unit_length: int,
+        position: int,
         total_length: int,
-        prev_word: Optional[str] = None,
-        next_units: List[str] = None
     ) -> float:
-        """Improved scoring for Viterbi word segmentation"""
-        score = 0.0
-        
-        # 1. Dictionary match - STRONG bonus
+        """
+        Score a single candidate word.
+        The word boundary cost in segment_with_viterbi already penalises
+        splitting, so this scorer only needs to reward dictionary matches
+        and word frequency — no compound bonus needed.
+        """
         if self.dictionary.contains(candidate):
             freq = self._get_word_frequency(candidate)
-            score += freq * 0.2 + 2.5  # Strong base bonus
+            # Compound bonus: each extra unit beyond 1 earns +3.0
+            # This makes a 2-unit dictionary compound beat two separate 1-unit words
+            # when the compound's frequency is at least comparable to the sum of parts.
+            compound_bonus = (unit_length - 1) * 3.0
+            return freq * 0.2 + 2.5 + compound_bonus
+        elif self._is_valid_thai_word(candidate):
+            return 0.0
         else:
-            # Unknown word - allow if valid Thai pattern
-            if self._is_valid_thai_word(candidate):
-                score += 0.1
-            else:
-                score -= 2.0  # Strong penalty for invalid patterns
-        
-        # 2. Length preference (prefer 2-4 unit words)
-        units_count = len(candidate)
-        if 2 <= units_count <= 3:
-            score += 1.0
-        elif units_count == 1:
-            score -= 0.3  # Penalty for single unit words (usually not standalone)
-        elif units_count >= 4:
-            score += 0.5  # Bonus for longer words
-        
-        # 3. Pattern validation
-        if self.pattern_rules.matches_pattern(candidate):
-            score += 0.3
-        
-        # 4. Position bonuses
-        is_first = (position == 0)
-        is_last = (position >= total_length - 1)
-        
-        if is_first:
-            score += 0.3
-        if is_last:
-            score += 0.3
-        
-        # 5. Check if next unit would make a better combination
-        if next_units and len(next_units) >= 1:
-            next_unit = next_units[0]
-            combined = candidate + next_unit
-            if self.dictionary.contains(combined):
-                score -= 0.5  # Penalty - should have taken the longer word
-        
-        return score
+            return -2.0
 
     def segment_from_mtus(self, mtus: List[str]) -> List[str]:
         """
