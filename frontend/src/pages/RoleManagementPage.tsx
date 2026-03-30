@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search, Shield, RefreshCw } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface Role {
   id: string;
@@ -13,6 +14,7 @@ interface RoleFormData {
 }
 
 const RoleManagementPage: React.FC = () => {
+  const { authFetch } = useAuth();
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,13 +28,13 @@ const RoleManagementPage: React.FC = () => {
   });
 
   // API base URL
-  const API_BASE = 'http://localhost:8002/api';
+  const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8000/api';
 
   // Load roles from backend
   const loadRoles = async () => {
     try {
       console.log('Loading roles from backend...');
-      const response = await fetch(`${API_BASE}/roles`);
+      const response = await authFetch(`${API_BASE}/roles`);
       const data = await response.json();
 
       console.log('Roles response:', data);
@@ -76,11 +78,9 @@ const RoleManagementPage: React.FC = () => {
     setSubmitting(true);
 
     try {
-      const response = await fetch(`${API_BASE}/roles`, {
+      const response = await authFetch(`${API_BASE}/roles`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
@@ -110,11 +110,9 @@ const RoleManagementPage: React.FC = () => {
     if (!editingRole) return;
 
     try {
-      const response = await fetch(`${API_BASE}/roles/${editingRole.id}`, {
+      const response = await authFetch(`${API_BASE}/roles/${editingRole.id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
@@ -144,7 +142,7 @@ const RoleManagementPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE}/roles/${roleId}`, {
+      const response = await authFetch(`${API_BASE}/roles/${roleId}`, {
         method: 'DELETE',
       });
 

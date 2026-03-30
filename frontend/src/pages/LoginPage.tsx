@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Eye, EyeOff, LogIn, User, Shield } from "lucide-react";
+import { Eye, EyeOff, LogIn, User } from "lucide-react";
+import { BunnyLogo } from "../components/BunnyLogo";
 import { useAuth } from "../contexts/AuthContext";
 
 // Import types from AuthContext
@@ -43,8 +44,8 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-black rounded-full flex items-center justify-center mb-4">
-            <Shield className="h-8 w-8 text-white" />
+          <div className="flex justify-center mb-4">
+            <BunnyLogo size={72} />
           </div>
           <h2 className="text-3xl font-bold text-gray-900">
             Thai Text Segmenter
@@ -63,7 +64,7 @@ export default function LoginPage() {
                 Username
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-20">
                   <User className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
@@ -73,7 +74,7 @@ export default function LoginPage() {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 focus:z-10 sm:text-sm"
                   placeholder="Enter your username"
                 />
               </div>
@@ -85,7 +86,7 @@ export default function LoginPage() {
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-20">
                   <LogIn className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
@@ -95,12 +96,12 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none relative block w-full pl-10 pr-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 focus:z-10 sm:text-sm"
                   placeholder="Enter your password"
                 />
                  <button
                    type="button"
-                   className="absolute inset-y-0 right-0 pr-3 flex items-center z-20 hover:bg-gray-100 rounded-r-lg"
+                   className="absolute inset-y-0 right-0 pr-3 flex items-center z-20 rounded-r-lg"
                    onClick={() => {
                      console.log('Eye icon clicked, current state:', showPassword);
                      setShowPassword(!showPassword);
@@ -109,9 +110,9 @@ export default function LoginPage() {
                    title={showPassword ? "Hide password" : "Show password"}
                  >
                    {showPassword ? (
-                     <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600 transition-colors" />
+                     <EyeOff className="h-4 w-4 text-gray-400 transition-colors" />
                    ) : (
-                     <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600 transition-colors" />
+                     <Eye className="h-4 w-4 text-gray-400 transition-colors" />
                    )}
                  </button>
               </div>
@@ -149,7 +150,7 @@ export default function LoginPage() {
         {/* Footer */}
         <div className="text-center">
           <p className="text-xs text-gray-500">
-            Made by Eunice Leow • Thai Text Segmentation System
+            {/* Made by Eunice Leow • Thai Text Segmentation System */}
           </p>
         </div>
       </div>

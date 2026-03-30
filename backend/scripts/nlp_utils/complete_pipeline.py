@@ -32,12 +32,14 @@ if sys.platform == "win32":
 SCRIPT_DIR  = os.path.dirname(os.path.abspath(__file__))   # scripts/nlp_utils/
 SCRIPTS_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))  # scripts/
 BACKEND_DIR = os.path.abspath(os.path.join(SCRIPTS_DIR, "..")) # backend/
-MODELS_DIR  = os.path.join(SCRIPTS_DIR, "models")          # scripts/models/
-UTILS_DIR   = os.path.join(SCRIPT_DIR, "utils")            # scripts/nlp_utils/utils/
+TRAINERS_DIR = os.path.join(SCRIPTS_DIR, "trainers")           # scripts/trainers/
+MODELS_DIR  = os.path.join(SCRIPTS_DIR, "trainers", "models")  # scripts/trainers/models/
+UTILS_DIR   = os.path.join(SCRIPT_DIR, "features")         # scripts/nlp_utils/features/
 
 sys.path.insert(0, BACKEND_DIR)
 sys.path.insert(0, SCRIPTS_DIR)
 sys.path.insert(0, SCRIPT_DIR)
+sys.path.insert(0, TRAINERS_DIR)
 sys.path.insert(0, MODELS_DIR)
 sys.path.insert(0, UTILS_DIR)
 
@@ -47,6 +49,7 @@ sys.path.insert(0, UTILS_DIR)
 from lst20_dictionary_builder import LST20Dictionary
 from word_segmentation import WordSegmenter
 from crf_mtu_inference import segment_text_to_mtus
+from features.syllable_utils import orthographic_syllabify
 
 
 class ThaiTextSegmenter:
@@ -61,40 +64,34 @@ class ThaiTextSegmenter:
     ):
         print("Initializing Thai NLP Pipeline...")
 
-        # MTU stage uses TCC rules (no model needed)
-        if mtu_model_path and os.path.exists(mtu_model_path):
-            print(f"Loading MTU model: {mtu_model_path}")
-            with open(mtu_model_path, "rb") as f:
-                self.mtu_crf = pickle.load(f)
-        else:
-            print("MTU stage: using TCC rules (no model)")
-            self.mtu_crf = None
+        print(f"Loading MTU model: {mtu_model_path}")
+        with open(mtu_model_path, "rb") as f:
+            self.mtu_crf = pickle.load(f)
 
         print(f"Loading syllable model: {syllable_model_path}")
         with open(syllable_model_path, "rb") as f:
             self.syllable_crf = pickle.load(f)
 
-        print(f"Loading Word Segmenter: {word_segmentation_path}")
-        self.word_segmenter = WordSegmenter(word_segmentation_path)
-        self.dictionary = self.word_segmenter.dictionary
-
         print(f"Loading POS model: {pos_model_path}")
         with open(pos_model_path, "rb") as f:
             self.pos_crf = pickle.load(f)
 
+        print(f"Loading Word Segmenter: {word_segmentation_path}")
+        self.word_segmenter = WordSegmenter(word_segmentation_path, pos_crf=self.pos_crf)
+        self.dictionary = self.word_segmenter.dictionary
+
         print("Pipeline ready\n")
 
     # =====================================================
-    # MTU (using TCC rules)
+    # MTU (CRF model)
     # =====================================================
     def _segment_to_mtus(self, text: str) -> List[str]:
         if not text or not text.strip():
             return []
         try:
-            # Use TCC rules (apply_tcc_rules) instead of CRF
-            from features import apply_tcc_rules
-            mtus = apply_tcc_rules(text)
-            return mtus
+            from crf_mtu_inference import segment_text_to_mtus
+            mtus_nested, _, _ = segment_text_to_mtus(text, self.mtu_crf)
+            return ["".join(mtu) for mtu in mtus_nested]
         except Exception as e:
             print(f"[WARN] MTU segmentation failed for '{text}': {e}")
             return []
@@ -105,14 +102,14 @@ class ThaiTextSegmenter:
     def _segment_to_syllables(self, mtus: List[str]) -> List[str]:
         if not mtus:
             return []
-        from syllable_features import extract_features_for_sentence
+        from syllable_utils import extract_features_for_sentence
 
+        # Features include NFA (orthographic_syllabify) boundary as a signal
         features = extract_features_for_sentence(mtus)
         labels = self.syllable_crf.predict([features])[0]
 
         syllables = []
         current = []
-
         for mtu, label in zip(mtus, labels):
             if label == "S":
                 if current:
@@ -127,10 +124,8 @@ class ThaiTextSegmenter:
                 current.append(mtu)
                 syllables.append("".join(current))
                 current = []
-
         if current:
             syllables.append("".join(current))
-
         return syllables
 
     # =====================================================
@@ -158,7 +153,7 @@ class ThaiTextSegmenter:
         return result
 
     # =====================================================
-    # WORD - Legacy method with syllable guidance
+    # WORD - Using Viterbi for better compound word detection
     # =====================================================
     def segment_words(self, text: str) -> List[str]:
         if not text or not text.strip():
@@ -167,7 +162,7 @@ class ThaiTextSegmenter:
         try:
             mtus = self._segment_to_mtus(text)
             syllables = self._segment_to_syllables(mtus)
-            return self.word_segmenter.segment_from_mtus_with_syllables(mtus, syllables)
+            return self.word_segmenter.segment(syllables)
         except Exception as e:
             print(f"[WARN] Word segmentation failed for '{text}': {e}")
             return [text]  # Return original text as single word
@@ -184,8 +179,8 @@ class ThaiTextSegmenter:
         # Syllable
         syllables = self._segment_to_syllables(mtus)
 
-        # Word (using syllable-guided segmentation)
-        fixed_words = self.word_segmenter.segment_from_mtus_with_syllables(mtus, syllables)
+        # Word (k-best Viterbi reranked by POS CRF)
+        fixed_words = self.word_segmenter.segment_with_pos_reranking(syllables, self.pos_crf)
 
         # POS tagging
         features = extract_features(fixed_words)
@@ -213,7 +208,7 @@ def main():
     MTU_MODEL      = os.path.join(BASE, "mtu_crf_model.pkl")
     SYLLABLE_MODEL = os.path.join(BASE, "syllable_crf_model.pkl")
     DICT_MODEL     = os.path.join(BASE, "lst20_dictionary.pkl")
-    POS_MODEL      = os.path.join(BASE, "pos_crf_model.pkl")
+    POS_MODEL      = os.path.join(BASE, "pos_crf_model_modified.pkl")
 
     segmenter = ThaiTextSegmenter(MTU_MODEL, SYLLABLE_MODEL, DICT_MODEL, POS_MODEL)
 
@@ -222,6 +217,7 @@ def main():
         "นั่นมือถืออะไร",
         "ผ้าไหมลายสวยมาก",
         "เที่ยวโอซาก้า",
+        "ภัยธรรมชาติทำให้แห้งแล้งเป็นอย่างมากล้ำค่าสุดล้ำ",
     ]
 
     for t in tests:

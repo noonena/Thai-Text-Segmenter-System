@@ -1,0 +1,23 @@
+{
+  "original_text": "ฝนตกอีกแล้ว คืนนี้คงหนาวกว่าคืนไหนๆ",
+  "segmented_words": [
+    "ฝน",
+    "ตก",
+    "อีก",
+    "แล้ว คืน",
+    "นี้",
+    "คง",
+    "หนาว",
+    "กว่า",
+    "คืน",
+    "ไหน",
+    "ๆ"
+  ],
+  "confidence": 0.95,
+  "metadata": {
+    "processing_method": "segment_text",
+    "tag": "span",
+    "css_class": ""
+  },
+  "timestamp": "20260308_223047"
+}

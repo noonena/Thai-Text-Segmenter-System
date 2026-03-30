@@ -20,22 +20,90 @@ import sys
 
 # Add parent directory to path for imports
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.dirname(SCRIPT_DIR))
+BACKEND_DIR = os.path.dirname(SCRIPT_DIR)
+sys.path.insert(0, BACKEND_DIR)
+sys.path.insert(0, os.path.join(BACKEND_DIR, 'scripts'))
+sys.path.insert(0, SCRIPT_DIR)
 
-from nlp_utils.utils.syllable_features import extract_features_for_sentence
+from nlp_utils.features.syllable_features import extract_features_for_sentence
+from nlp_utils.features.char_utils import orthographic_syllabify
 from models.crf_mtu_inference import load_model, segment_text_to_mtus
+
+
+def get_gold_clusters(word: str) -> list:
+    """Get phonological syllables for gold-standard syllable training."""
+    return orthographic_syllabify(word)
+
+
+def align_pred_to_gold(pred_mtus, gold_clusters):
+    """
+    Label pred_mtus so that merging B-M-E groups reproduces gold_clusters.
+
+    Example:
+        pred:  ["อา", "กา", "ศ"]   gold: ["อา", "กาศ"]
+        → labels: [S, B, E]
+
+        pred:  ["ประ", "เทศ"]      gold: ["ประ", "เทศ"]
+        → labels: [S, S]
+    """
+    labels   = []
+    pred_idx = 0
+
+    for gold_syl in gold_clusters:
+        collected = ""
+        group_len = 0
+        matched   = False
+
+        while pred_idx < len(pred_mtus):
+            collected += pred_mtus[pred_idx]
+            pred_idx  += 1
+            group_len += 1
+
+            if collected == gold_syl:
+                if group_len == 1:
+                    labels.append("S")
+                else:
+                    labels.append("B")
+                    labels.extend(["M"] * (group_len - 2))
+                    labels.append("E")
+                matched = True
+                break
+
+            if len(collected) > len(gold_syl):
+                # Overshot — label consumed MTUs as singletons and move on
+                labels.extend(["S"] * group_len)
+                matched = True
+                break
+
+        if not matched and group_len > 0:
+            # Ran out of pred MTUs before matching this gold syllable —
+            # label whatever was consumed as singletons
+            labels.extend(["S"] * group_len)
+
+    # Any leftover pred MTUs not covered by gold syllables
+    while pred_idx < len(pred_mtus):
+        labels.append("S")
+        pred_idx += 1
+
+    # Safety: if something still went wrong, fall back to all-S
+    if len(labels) != len(pred_mtus):
+        return ["S"] * len(pred_mtus)
+
+    return labels
 
 
 # ======================
 # CONFIG
 # ======================
-TRAIN_DIR = r"D:\project\word_wrapping\script\data\AIFORTHAI-LST20Corpus\LST20_Corpus\train"
-OUTPUT_DIR = r"D:\project\ThaitextSegmentersystem\backend\models"
+BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'data', 'LST20_Corpus')
+TRAIN_DIR = os.path.join(BASE_DIR, 'train')
+DEV_DIR   = os.path.join(BASE_DIR, 'eval')
+TEST_DIR  = os.path.join(BASE_DIR, 'test')
+OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'models')
 MTU_MODEL_PATH = os.path.join(OUTPUT_DIR, "mtu_crf_model.pkl")
 SYLLABLE_MODEL_PATH = os.path.join(OUTPUT_DIR, "syllable_crf_model.pkl")
 
-MAX_SENTENCES = 2000   # Start with 2000 sentences
-TRAIN_RATIO = 0.8
+MAX_SENTENCES = 100000   # Use more sentences for better training
 
 
 # ======================
@@ -114,15 +182,15 @@ def words_to_syllable_data(words, mtu_crf):
           Labels: [S, S]
     
     Another example:
-        Words: ["สบาย"]
-        
-        Word 1: "สบาย"
-          MTUs: ["ส", "บา", "ย"]
-          Labels: [B, M, E]  (Multiple MTUs = One syllable)
-        
+        Words: ["ประเทศ"]
+
+        Word 1: "ประเทศ"
+          MTUs: ["ประ", "เทศ"]
+          Labels: [S, S]  (2 MTU clusters = 2 syllables)
+
         Final:
-          MTUs: ["ส", "บา", "ย"]
-          Labels: [B, M, E]
+          MTUs: ["ประ", "เทศ"]
+          Labels: [S, S]
     """
     all_mtus = []
     all_labels = []
@@ -135,17 +203,12 @@ def words_to_syllable_data(words, mtu_crf):
             
             if not word_mtus:
                 continue
-            
-            # Assign syllable labels
-            # Strategy: Treat each word as one syllable unit
-            num_mtus = len(word_mtus)
-            
-            if num_mtus == 1:
-                # Single MTU word = Single syllable
-                word_labels = ['S']
-            else:
-                # Multiple MTUs = One syllable with B-M-E structure
-                word_labels = ['B'] + ['M'] * (num_mtus - 2) + ['E']
+
+            # Gold syllables from rule-based label_chars
+            gold_clusters = get_gold_clusters(word)
+
+            # Align MTU model output to gold syllables → B/M/E/S labels
+            word_labels = align_pred_to_gold(word_mtus, gold_clusters)
             
             all_mtus.extend(word_mtus)
             all_labels.extend(word_labels)
@@ -172,13 +235,15 @@ def prepare_training_data(train_dir, mtu_crf):
     
     processed_files = 0
     
-    for filepath in files[:100]:  # Start with first 100 files
+    for filepath in files[:1000]:  # Start with first 100 files
         sentences = read_lst20_for_syllable(filepath, mtu_crf)
         
         for mtus, labels in sentences:
+            if not mtus or not labels or len(mtus) != len(labels):
+                continue
             # Extract features
             features = extract_features_for_sentence(mtus)
-            
+
             X.append(features)
             y.append(labels)
             
@@ -218,24 +283,38 @@ def train_syllable_crf(X_train, y_train):
 # ======================
 # EVALUATION
 # ======================
+def evaluate_split(crf, X, y, split_name: str) -> dict:
+    """Evaluate syllable CRF on a named split"""
+    y_pred = crf.predict(X)
+
+    y_flat      = [l for sent in y      for l in sent]
+    y_pred_flat = [l for sent in y_pred for l in sent]
+
+    print(f"\n{'='*60}")
+    print(f"EVALUATION: {split_name}  ({len(X)} sentences)")
+    print(f"{'='*60}")
+
+    print(classification_report(y_flat, y_pred_flat, labels=['B', 'M', 'E', 'S'], digits=3))
+
+    # Boundary P/R/F1 (E and S mark syllable ends)
+    tp = fp = fn = 0
+    for seq_r, seq_p in zip(y, y_pred):
+        ref_b  = {i for i, l in enumerate(seq_r) if l in ('E', 'S')}
+        pred_b = {i for i, l in enumerate(seq_p) if l in ('E', 'S')}
+        tp += len(ref_b & pred_b)
+        fp += len(pred_b - ref_b)
+        fn += len(ref_b - pred_b)
+    prec = tp / (tp + fp) if tp + fp else 0
+    rec  = tp / (tp + fn) if tp + fn else 0
+    f1   = 2 * prec * rec / (prec + rec) if prec + rec else 0
+    print(f"  Boundary P/R/F1 : {prec:.4f} / {rec:.4f} / {f1:.4f}")
+
+    return {'boundary_precision': prec, 'boundary_recall': rec, 'boundary_f1': f1}
+
+
 def evaluate_model(crf, X_test, y_test):
-    """Evaluate syllable CRF"""
-    y_pred = crf.predict(X_test)
-    
-    # Flatten for evaluation
-    y_test_flat = [label for sent in y_test for label in sent]
-    y_pred_flat = [label for sent in y_pred for label in sent]
-    
-    print("\n" + "=" * 80)
-    print("Syllable CRF Evaluation")
-    print("=" * 80)
-    
-    print(classification_report(
-        y_test_flat, 
-        y_pred_flat, 
-        labels=['B', 'M', 'E', 'S'],
-        digits=3
-    ))
+    """Backward-compat wrapper (single split)."""
+    evaluate_split(crf, X_test, y_test, "TEST")
 
 
 # ======================
@@ -243,45 +322,66 @@ def evaluate_model(crf, X_test, y_test):
 # ======================
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    
+
     print("=" * 80)
     print("CRF SYLLABLE TRAINER — LST20 Corpus")
     print("=" * 80)
-    
+
     # Load MTU model (needed to segment words into MTUs)
     print(f"\nLoading MTU model from: {MTU_MODEL_PATH}")
     mtu_crf = load_model(MTU_MODEL_PATH)
-    print("✅ MTU model loaded")
-    
-    # Prepare training data
-    print("\nPreparing syllable training data...")
-    X, y = prepare_training_data(TRAIN_DIR, mtu_crf)
-    
-    # Split train/test
-    split = int(len(X) * TRAIN_RATIO)
-    X_train, X_test = X[:split], X[split:]
-    y_train, y_test = y[:split], y[split:]
-    
-    print(f"\nTrain sentences: {len(X_train)}")
-    print(f"Test sentences : {len(X_test)}")
-    
-    # Show sample
-    if X_train:
-        print("\nSample training data:")
-        print(f"  MTUs: {len(X_train[0])} MTUs in first sentence")
-        print(f"  Labels: {y_train[0][:10]}...")  # Show first 10 labels
-    
+    print("MTU model loaded")
+
+    # Load official corpus splits
+    print("\nLoading train...")
+    X_train, y_train = prepare_training_data(TRAIN_DIR, mtu_crf)
+    print("\nLoading dev (eval)...")
+    X_dev,   y_dev   = prepare_training_data(DEV_DIR,   mtu_crf)
+    print("\nLoading test...")
+    X_test,  y_test  = prepare_training_data(TEST_DIR,  mtu_crf)
+
+    print(f"\nSplit: train={len(X_train)}  dev={len(X_dev)}  test={len(X_test)}")
+
+    if not X_train:
+        print("No training data found!")
+        return
+
     # Train
     crf = train_syllable_crf(X_train, y_train)
-    
-    # Evaluate
-    evaluate_model(crf, X_test, y_test)
-    
+
+    # Evaluate on dev and test
+    dev_scores  = evaluate_split(crf, X_dev,  y_dev,  "DEV")
+    test_scores = evaluate_split(crf, X_test, y_test, "TEST")
+
+    print("\n" + "=" * 60)
+    print("SUMMARY")
+    print("=" * 60)
+    for split_name, scores in [("DEV", dev_scores), ("TEST", test_scores)]:
+        print(f"  {split_name}:")
+        print(f"    Boundary P : {scores['boundary_precision']:.4f}")
+        print(f"    Boundary R : {scores['boundary_recall']:.4f}")
+        print(f"    Boundary F1: {scores['boundary_f1']:.4f}")
+
     # Save
     with open(SYLLABLE_MODEL_PATH, "wb") as f:
         pickle.dump(crf, f)
-    
-    print(f"\n✅ Syllable model saved to: {SYLLABLE_MODEL_PATH}")
+
+    print(f"\nSyllable model saved to: {SYLLABLE_MODEL_PATH}")
+
+    # ── Save test results to JSON ──────────────────────────────
+    import json
+    from datetime import datetime
+    RESULTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'results')
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+    with open(os.path.join(RESULTS_DIR, 'syllable_results.json'), 'w', encoding='utf-8') as f:
+        json.dump({
+            "timestamp": datetime.now().isoformat(),
+            "sentences_evaluated": len(X_test),
+            "precision": round(test_scores['boundary_precision'], 4),
+            "recall": round(test_scores['boundary_recall'], 4),
+            "f1": round(test_scores['boundary_f1'], 4),
+        }, f, indent=2)
+    print(f"Results saved to: syllable_results.json")
     
     # Test on example
     print("\n" + "=" * 80)
@@ -335,70 +435,140 @@ def main_with_args():
     args = parser.parse_args()
     
     if args.retrain:
-        print("🔄 Retraining syllable model with accumulated data...")
+        print("Retraining syllable model with accumulated data...")
         # Implementation would load learning data and retrain
-        print("✅ Syllable model retraining complete")
-        
+        print("Syllable model retraining complete")
+
     elif args.test:
-        print("🧪 Testing current syllable model...")
+        print("Testing current syllable model...")
         test_current_model()
         
     else:
-        # Original main function
-        print("CRF SYLLABLE TRAINER — LST20 Corpus")
-        print("=" * 50)
-        
-        # Paths
-        TRAIN_DIR = r"D:\project\word_wrapping\script\data\AIFORTHAI-LST20Corpus\LST20_Corpus\train"
-        MTU_MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'models', 'mtu_crf_model.pkl')
-        SYLLABLE_MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'models', 'syllable_crf_model.pkl')
-        
-        # Train
-        print("Starting syllable model training...")
-        # Load MTU model
-        with open(MTU_MODEL_PATH, 'rb') as f:
-            mtu_crf = pickle.load(f)
-        
-        # Prepare training data
-        X, y = prepare_training_data(TRAIN_DIR, mtu_crf)
-        
-        # Split train/test
-        split = int(len(X) * TRAIN_RATIO)
-        X_train, X_test = X[:split], X[split:]
-        y_train, y_test = y[:split], y[split:]
-        
-        # Train
-        crf = train_syllable_crf(X_train, y_train)
-        
-        # Save
-        with open(SYLLABLE_MODEL_PATH, "wb") as f:
-            pickle.dump(crf, f)
-        
-        print(f"✅ Syllable model saved to: {SYLLABLE_MODEL_PATH}")
+        main()
+
+def _load_test_models():
+    """Load syllable CRF, MTU CRF, and word segmenter. Returns (syllable_crf, mtu_crf, word_segmenter) or None on failure."""
+    import sys
+    models_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'models')
+    model_path     = os.path.join(models_dir, 'syllable_crf_model.pkl')
+    mtu_model_path = os.path.join(models_dir, 'mtu_crf_model.pkl')
+    dict_path      = os.path.join(models_dir, 'lst20_dictionary.pkl')
+
+    for path, label in [(model_path, 'Syllable model'), (mtu_model_path, 'MTU model')]:
+        if not os.path.exists(path):
+            print(f"{label} not found: {path}")
+            return None
+
+    print(f"Loading syllable model: {model_path}")
+    with open(model_path, 'rb') as f:
+        syllable_crf = pickle.load(f)
+
+    print(f"Loading MTU model: {mtu_model_path}")
+    with open(mtu_model_path, 'rb') as f:
+        mtu_crf = pickle.load(f)
+
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'models'))
+    from word_segmentation import WordSegmenter
+    word_segmenter = WordSegmenter(dict_path)
+
+    return syllable_crf, mtu_crf, word_segmenter
+
+
+def _load_test_cases():
+    """Load test cases from data/test.json. Returns list or None on failure."""
+    import json
+    test_file = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'test.json')
+    if not os.path.exists(test_file):
+        print(f"Test file not found: {test_file}")
+        return None
+    with open(test_file, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def _run_pipeline(text, mtu_crf, syllable_crf):
+    """Run MTU → syllable stages on one text. Returns (mtus, mtu_char_bmes, syllable_bmes, syllables)."""
+    from models.crf_mtu_inference import segment_text_to_mtus
+
+    mtus_nested, mtu_char_bmes, _ = segment_text_to_mtus(text, mtu_crf)
+    mtus = ["".join(m) for m in mtus_nested]
+
+    features = extract_features_for_sentence(mtus)
+    bmes     = list(syllable_crf.predict([features])[0])
+
+    syllables = []
+    current   = []
+    for mtu, label in zip(mtus, bmes):
+        if label == 'S':
+            if current:
+                syllables.append(''.join(current))
+                current = []
+            syllables.append(mtu)
+        elif label == 'B':
+            current = [mtu]
+        elif label == 'M':
+            current.append(mtu)
+        elif label == 'E':
+            current.append(mtu)
+            syllables.append(''.join(current))
+            current = []
+    if current:
+        syllables.append(''.join(current))
+
+    return mtus, mtu_char_bmes, bmes, syllables
+
+
+def _print_case_result(case, mtus, mtu_char_bmes, bmes, syllables, pred_words):
+    """Print a single test case result."""
+    text          = case['text']
+    expected_word = case['word']
+    note          = case.get('note', '')
+    ok            = pred_words == expected_word
+
+    status = "PASS" if ok else "FAIL"
+    print(f"[{status}] {text}")
+    if note:
+        print(f"       note         : {note}")
+    print(f"       chars        : {list(text)}")
+    print(f"       mtu_bmes     : {list(mtu_char_bmes)}")
+    print(f"       mtu          : {mtus}")
+    print(f"       syllable_bmes: {bmes}")
+    print(f"       syllable     : {syllables}")
+    if not ok:
+        print(f"       expected     : {expected_word}")
+        print(f"       got          : {pred_words}")
+    else:
+        print(f"       word         : {pred_words}")
+    print()
+    return ok
+
 
 def test_current_model():
-    """Test current syllable model"""
-    model_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'syllable_crf_model.pkl')
-    mtu_model_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'mtu_crf_model.pkl')
-    
-    if os.path.exists(model_path) and os.path.exists(mtu_model_path):
-        print(f"Loading MTU model: {mtu_model_path}")
-        with open(mtu_model_path, 'rb') as f:
-            mtu_crf = pickle.load(f)
-        
-        print(f"Loading syllable model: {model_path}")
-        with open(model_path, 'rb') as f:
-            syllable_crf = pickle.load(f)
-        
-        # Test with example
-        test_mtus = ['คำ', 'ว่า', 'ทด', 'สอบ']
-        test_features = extract_features_for_sentence(test_mtus)
-        predicted_labels = syllable_crf.predict([test_features])[0]
-        
-        print(f"Test MTUs: {test_mtus}")
-        print(f"Predicted labels: {predicted_labels}")
-    else:
-        print("❌ Models not found")
+    """Test the current syllable model end-to-end against data/test.json."""
+    import sys
+    if sys.platform == "win32":
+        sys.stdout.reconfigure(encoding='utf-8')
+
+    result = _load_test_models()
+    if result is None:
+        return
+    syllable_crf, mtu_crf, word_segmenter = result
+
+    test_cases = _load_test_cases()
+    if test_cases is None:
+        return
+
+    print(f"\nRunning {len(test_cases)} test cases\n")
+    print("=" * 60)
+
+    passed = 0
+    for case in test_cases:
+        mtus, mtu_char_bmes, bmes, syllables = _run_pipeline(case['text'], mtu_crf, syllable_crf)
+        pred_words = word_segmenter.segment(syllables)
+        if _print_case_result(case, mtus, mtu_char_bmes, bmes, syllables, pred_words):
+            passed += 1
+
+    print("=" * 60)
+    print(f"Result: {passed}/{len(test_cases)} passed")
 
 if __name__ == "__main__":
     main_with_args()

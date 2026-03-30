@@ -232,8 +232,7 @@ export default function ProcessTextPage({ settings }: Props) {
   const [error, setError] = useState<string | null>(null);
   const { isProcessing, startProcessing, stopProcessing, updateProgress } = useProcessing();
 
-  // API base URL
-  const API_BASE = 'http://localhost:8002/api';
+  const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8000/api';
 
 const handleRun = async () => {
     if (!inputText.trim()) {
@@ -247,20 +246,27 @@ const handleRun = async () => {
 
 try {
       console.log("Sending segmentation request:", { text: inputText.trim() });
-      
+
       updateProgress(25, "Sending text to API...");
-      
+
+      // Slowly creep progress from 25 → 70 while waiting for API
+      let fakeProgress = 25;
+      const creep = setInterval(() => {
+        fakeProgress = Math.min(fakeProgress + 2, 70);
+        updateProgress(fakeProgress, "Processing...");
+      }, 400);
+
       // Replace apiClient.segmentText with direct fetch
-      const response = await fetch(`${API_BASE}/segment`, {
+      const response = await fetch(`${API_BASE}/nlp/text-process`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ text: inputText.trim() }),
       });
 
+      clearInterval(creep);
       const data = await response.json();
-      
+
       if (!data.success || !data.data) {
         throw new Error(data.error || "Segmentation failed");
       }
@@ -278,20 +284,19 @@ try {
       const wrappedHtml = buildWrappedHtml(data.data.words, tag, cssClass);
       setOutputHtml(wrappedHtml);
       
-      updateProgress(95, "Saving results...");
-      // Save to history
-      saveToHistory({
-        filename: `text-${Date.now()}.html`,
-        segments: data.data.words.length,
-        output: wrappedHtml
-      });
+      // updateProgress(95, "Saving results...");
+      // // Save to history
+      // saveToHistory({
+      //   filename: `text-${Date.now()}.html`,
+      //   segments: data.data.words.length,
+      //   output: wrappedHtml
+      // });
 
       // Export to training data (non-blocking)
-      fetch(`${API_BASE}/export-training`, {
+      fetch(`${API_BASE}/nlp/export-training`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           original_text: inputText.trim(),
           segmented_words: data.data.words,
@@ -309,6 +314,7 @@ try {
       
       updateProgress(100, "Complete!");
     } catch (err) {
+      clearInterval(creep);
       console.error("❌ Full Error:", err);
       setError(err instanceof Error ? err.message : "Segmentation failed");
     } finally {
@@ -316,22 +322,28 @@ try {
     }
   };
 
+  const escapeHtml = (str: string): string =>
+    str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
   const buildWrappedHtml = (
     words: string[],
     wrapTag: string,
     wrapClass: string
   ): string => {
     const thaiRegex = /[\u0E00-\u0E7F]/;
+    const safeTag = wrapTag === "div" ? "div" : "span";
+    const safeClass = escapeHtml(wrapClass);
 
     const wrappedParts = words.map((word) => {
+      const safeWord = escapeHtml(word);
       if (thaiRegex.test(word)) {
-        if (wrapClass) {
-          return `<wbr><${wrapTag} class="${wrapClass}">${word}</${wrapTag}>`;
+        if (safeClass) {
+          return `<wbr><${safeTag} class="${safeClass}">${safeWord}</${safeTag}>`;
         } else {
-          return `<wbr><${wrapTag}>${word}</${wrapTag}>`;
+          return `<wbr><${safeTag}>${safeWord}</${safeTag}>`;
         }
       } else {
-        return word;
+        return safeWord;
       }
     });
 
@@ -377,7 +389,7 @@ try {
               }}
               className="text-xs px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
             >
-              Copy HTML
+              Copy Text
             </button>
           </div>
           

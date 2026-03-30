@@ -1,0 +1,32 @@
+[
+  {
+    "text": "วิตกว่า",
+    "word": ["วิตก", "ว่า"],
+    "note": "stolen consonant — CRF merges ก+ว่า, repair must restore วิตก+ว่า"
+  },
+  {
+    "text": "รายงาน",
+    "word": ["รายงาน"],
+    "note": "compound word — Viterbi must join ราย+งาน into รายงาน"
+  },
+  {
+    "text": "ประเทศจีน",
+    "word": ["ประเทศ", "จีน"],
+    "note": "two separate words — must NOT merge into ประเทศจีน"
+  },
+  {
+    "text": "สวัสดี",
+    "word": ["สวัสดี"],
+    "note": "common greeting — single word"
+  },
+  {
+    "text": "ผมชอบกินข้าว",
+    "word": ["ผม", "ชอบ", "กิน", "ข้าว"],
+    "note": "simple sentence — 4 separate words"
+  },
+  {
+    "text": "เขาวิตกว่าจะไม่รอด",
+    "word": ["เขา", "วิตก", "ว่า", "จะ", "ไม่", "รอด"],
+    "note": "วิตกว่า in sentence context"
+  }
+]

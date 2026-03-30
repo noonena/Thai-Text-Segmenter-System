@@ -1,0 +1,19 @@
+{
+  "original_text": "ท่ามกลางความวิตกว่าเขื่อนในประเทศจีนกว่า",
+  "segmented_words": [
+    "ท่ามกลาง",
+    "ความ",
+    "วิตกว่า",
+    "เขื่อน",
+    "ใน",
+    "ประเทศจีน",
+    "กว่า"
+  ],
+  "confidence": 0.95,
+  "metadata": {
+    "processing_method": "segment_text",
+    "tag": "span",
+    "css_class": ""
+  },
+  "timestamp": "20260317_224923"
+}

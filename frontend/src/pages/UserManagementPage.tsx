@@ -76,7 +76,7 @@ const PasswordInput = ({
 };
 
 const UserManagementPage: React.FC = () => {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, authFetch } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,12 +91,12 @@ const UserManagementPage: React.FC = () => {
     role_id: '',
     name: ''
   });
-  const API_BASE = 'http://localhost:8002/api';
+  const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8000/api';
 
   const loadRoles = async () => {
     try {
       console.log('Loading roles from backend...');
-      const response = await fetch(`${API_BASE}/roles`);
+      const response = await authFetch(`${API_BASE}/roles`);
       const data = await response.json();
 
       console.log('Roles response:', data);
@@ -118,7 +118,7 @@ const UserManagementPage: React.FC = () => {
   const loadUsers = async () => {
     try {
       console.log('Loading users from backend...');
-      const response = await fetch(`${API_BASE}/users`);
+      const response = await authFetch(`${API_BASE}/users`);
       const data = await response.json();
 
       if (data.success) {
@@ -139,7 +139,7 @@ const UserManagementPage: React.FC = () => {
     setSubmitting(true);
 
     try {
-      const response = await fetch(`${API_BASE}/users`, {
+      const response = await authFetch(`${API_BASE}/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -181,7 +181,7 @@ const UserManagementPage: React.FC = () => {
         updateData.password = formData.password;
       }
 
-      const response = await fetch(`${API_BASE}/users/${editingUser.id}`, {
+      const response = await authFetch(`${API_BASE}/users/${editingUser.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateData),
@@ -213,7 +213,7 @@ const UserManagementPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE}/users/${userId}`, {
+      const response = await authFetch(`${API_BASE}/users/${userId}`, {
         method: 'DELETE',
       });
 

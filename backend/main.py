@@ -10,11 +10,10 @@ if __name__ == "__main__":
     
     print("Starting Thai Text Segmenter Backend...")
     print("API Documentation: http://localhost:8002/docs")
-    print("Default login: admin / admin123")
     
     uvicorn.run(
         app,
         host="0.0.0.0",
-        port=8002,
+        port=8000,
         log_level="info"
     )

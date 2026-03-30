@@ -65,7 +65,7 @@ class ApiConfig {
     console.log('🔍 Starting auto-detection...');
     
     // Skip auto-detection if environment variables are set
-    if (this.getFromEnv('VITE_AUTH_API') && this.getFromEnv('VITE_NLP_API')) {
+    if (this.getFromEnv('VITE_API_BASE')) {
       console.log('✅ Using environment variables, skipping auto-detection');
       return;
     }

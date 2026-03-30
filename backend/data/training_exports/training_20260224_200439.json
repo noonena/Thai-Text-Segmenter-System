@@ -1,0 +1,21 @@
+{
+  "original_text": "ภัยธรรมชาติทำให้แห้งแล้งเป็นอย่างมากล้ำค่า",
+  "segmented_words": [
+    "ภัยธรรมชาติ",
+    "ทำให้",
+    "แห้ง",
+    "แล้ง",
+    "เป็น",
+    "อย่าง",
+    "มาก",
+    "ล้ำ",
+    "ค่า"
+  ],
+  "confidence": 0.95,
+  "metadata": {
+    "processing_method": "segment_text",
+    "tag": "span",
+    "css_class": ""
+  },
+  "timestamp": "20260224_200439"
+}
