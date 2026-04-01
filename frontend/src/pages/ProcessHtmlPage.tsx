@@ -60,16 +60,16 @@ export default function ProcessHtmlPage({ settings }: Props) {
     startProcessing("Processing HTML file...");
     setError(null);
 
+    let creep: ReturnType<typeof setInterval> | null = null;
     try {
       updateProgress(25, "Sending HTML to API...");
 
       let fakeProgress = 25;
-      const creep = setInterval(() => {
+      creep = setInterval(() => {
         fakeProgress = Math.min(fakeProgress + 2, 70);
         updateProgress(fakeProgress, "Processing...");
       }, 400);
 
-      // Process HTML with direct fetch
       const response = await fetch(`${API_BASE}/nlp/process-html`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -78,6 +78,7 @@ export default function ProcessHtmlPage({ settings }: Props) {
       });
 
       clearInterval(creep);
+      creep = null;
       const data = await response.json();
 
       if (!data.success || !data.data) {
@@ -140,8 +141,9 @@ export default function ProcessHtmlPage({ settings }: Props) {
       URL.revokeObjectURL(url);
       
       updateProgress(100, "Complete!");
+      await new Promise(r => setTimeout(r, 600));
     } catch (err) {
-      clearInterval(creep);
+      if (creep) clearInterval(creep);
       console.error("❌ Error:", err);
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {

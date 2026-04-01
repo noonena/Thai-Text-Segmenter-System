@@ -2,7 +2,8 @@
 คาด	VV
 ดัชนี	NN
 เชื่อมั่น	VV
-SMEs	NN
+SME	NN
+s	NN
 เม.ย.	NN
 ลด	VV
 ลง	AV
@@ -15,9 +16,9 @@ SMEs	NN
 เผย	VV
 ดัชนี	NN
 TSSI	NN
-SMEs	NN
-ประจำ	VV
-เดือน	NN
+SME	NN
+s	NN
+ประจำเดือน	VV
 เมษายน	NN
 ลด	VV
 ลง	AV
@@ -94,7 +95,8 @@ SMEs	NN
 นัก	NN
 งาน	NN
 ส่ง	VV
-เสริม	VV
+เส	VV
+ริม	VV
 วิ	NN
 สาห	NN
 กิจ	NN
@@ -170,12 +172,12 @@ I	NN
 ประ	VV
 จำ	VV
 เดือน	NN
-เมษ	NN
-า	NN
-ย	NN
+เม	NN
+ษาย	NN
 น	NN
 เมื่อ	PS
-เปรียบ	VV
+เป	VV
+รียบ	VV
 เทียบ	VV
 กับ	PS
 มี	NN
@@ -223,8 +225,7 @@ I	NN
 
 โดย	CC
 ภาค	NN
-การ	FX
-ค้า	VV
+การค้า	FX
 ส่ง	VV
 ภาค	NN
 การ	FX
@@ -232,14 +233,12 @@ I	NN
 และ	CC
 ภาค	NN
 บริการ	VV
-ปรับ	VV
-ตัว	NN
+ปรับตัว	VV
 ลด	VV
 ลง	AV
 อยู่	VV
 ที่	PS
-40	NN
-.	NN
+40.	NN
 139	NN
 .	NN
 8	NN
@@ -251,8 +250,7 @@ I	NN
 740.5และ	NN
 42.7	NN
 
-เช่น	NN
-เดียว	NU
+เช่นเดียว	NU
 กับ	PS
 ความ	FX
 เชื่อมั่น	VV
@@ -262,8 +260,7 @@ I	NN
 ที่	CC
 ค่า	NN
 ดัชนี	NN
-ปรับ	VV
-ตัว	NN
+ปรับตัว	VV
 ลด	VV
 ลง	AV
 อยู่	VV
@@ -272,8 +269,7 @@ I	NN
 จาก	PS
 34.7	NN
 
-ขณะ	CC
-ที่	CC
+ขณะที่	CC
 ความ	FX
 เชื่อมั่น	VV
 ต่อ	PS
@@ -281,8 +277,7 @@ I	NN
 ประเทศ	NN
 ค่า	NN
 ดัชนี	NN
-ปรับ	VV
-ตัว	NN
+ปรับตัว	VV
 เพิ่ม	VV
 ขึ้น	AV
 อยู่	AX
@@ -291,8 +286,8 @@ I	NN
 จาก	PS
 22.1	NN
 
-สาเหตุ	NN
-ผล	NN
+สา	NN
+เหตุผล	NN
 มา	VV
 จาก	PS
 สถานการณ์	NN
@@ -323,8 +318,7 @@ I	NN
 ที่	CC
 มี	VV
 แนวโน้ม	NN
-ปรับ	VV
-ตัว	NN
+ปรับตัว	VV
 เพิ่ม	VV
 ขึ้น	AV
 ซึ่ง	CC
@@ -332,17 +326,17 @@ I	NN
 ผล	NN
 ทั้ง	CC
 ต่อ	PS
-ต้น	NN
-ทุน	NN
+ต้นทุน	NN
 การ	FX
-ประกอบ	VV
-การ	FX
+ประกอบการ	VV
 และ	CC
-ค่าครองชีพ	NN
+ค่า	NN
+ครองชีพ	VV
 ของ	PS
 ประชาชน	NN
 
-โดยเฉพาะ	CC
+โดย	CC
+เฉพาะ	CC
 ธุรกิจ	NN
 ค้า	VV
 ส่ง	VV
@@ -350,7 +344,8 @@ I	NN
 อุปโภค	NN
 บริโภค	NN
 ค้าปลีก	VV
-รถยนต์	NN
+รถ	NN
+ยนต์	NN
 รถ	NN
 จักรยาน	NN
 ยนต์	NN
@@ -358,10 +353,8 @@ I	NN
 บริการ	VV
 โรงแรม	NN
 เกสต์เฮ้าส์	NN
-บัง	NN
-กะ	NN
-โลนั	NN
-บ	VV
+บังกะโล	NN
+นับ	VV
 เป็น	VV
 กลุ่ม	CL
 ที่	CC
@@ -384,8 +377,7 @@ I	NN
 3เดือน	CL
 ข้าง	NN
 หน้า	AJ
-ปรับ	VV
-ตัว	NN
+ปรับตัว	VV
 ลด	VV
 ลง	AV
 อยู่	VV
@@ -406,7 +398,8 @@ I	NN
 สำหรับ	PS
 ดัชนี	NN
 TSSI	NN
-SMEs	NN
+SME	NN
+s	NN
 รวม	VV
 5	NU
 ภูมิภาค	CL
@@ -421,18 +414,18 @@ SMEs	NN
 
 โดย	CC
 ภาค	NN
-ตะวันออก	NN
-เฉียงเหนือ	VV
+ตะวัน	NN
+ออก	NN
+เฉียง	VV
+เหนือ	NN
 มี	VV
 ค่า	NN
 ดัชนี	NN
-ปรับ	VV
-ตัว	NN
+ปรับตัว	VV
 ลด	VV
 ลง	AV
 มาก	VV
-ที่	AV
-สุด	AV
+ที่สุด	AV
 อยู่	VV
 ที่	PS
 37.2	NN
@@ -462,13 +455,11 @@ SMEs	NN
 (	PU
 ลด	VV
 ลง	AV
-3.	NN
-1	NN
+3.1	NN
 )	PU
 
 และ	CC
-กรุงเทพ	NN
-ฯ	NN
+กรุงเทพฯ	NN
 ปริมณฑล	NN
 ลด	VV
 ลง	AV
@@ -484,18 +475,16 @@ SMEs	NN
 1.4	NU
 )	PU
 
-ขณะ	CC
-ที่	CC
+ขณะที่	CC
 ภาค	NN
 กลาง	NN
 ภาค	NN
-ตะวันออก	NN
+ตะวัน	NN
+ออก	NN
 และ	CC
 ภาค	NN
-ตะวัน	NN
-ตก	VV
-ปรับ	VV
-ตัว	NN
+ตะวันตก	NN
+ปรับตัว	VV
 เพิ่ม	VV
 ขึ้น	AV
 อยู่	AX
@@ -507,12 +496,10 @@ SMEs	NN
 (	PU
 เพิ่ม	VV
 ขึ้น	AV
-2.	NU
-2	NU
+2.2	NU
 )	PU
 และ	CC
-ภาค	NN
-เหนือ	NN
+ภาคเหนือ	NN
 เพิ่ม	VV
 ขึ้น	AV
 อยู่	AX
@@ -524,8 +511,7 @@ SMEs	NN
 (	PU
 เพิ่ม	VV
 ขึ้น	AV
-2.	NU
-2	NU
+2.2	NU
 )	PU
 
 ค่า	NN
@@ -549,8 +535,7 @@ SMEs	NN
 50	NU
 โดย	CC
 ผู้	FX
-ประกอบ	VV
-การ	FX
+ประกอบการ	VV
 ส่วนใหญ่	NN
 เชื่อ	VV
 ว่า	CC
@@ -565,10 +550,8 @@ SMEs	NN
 ใน	PS
 ระดับ	CL
 สูง	VV
-ที่	AV
-สุด	AV
-ได้	CC
-แก่	CC
+ที่สุด	AV
+ได้แก่	CC
 ผล	NN
 กระทบ	VV
 จาก	PS

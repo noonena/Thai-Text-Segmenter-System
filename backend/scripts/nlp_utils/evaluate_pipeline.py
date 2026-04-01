@@ -8,7 +8,6 @@ saved by their respective trainers.
 
 import os
 import sys
-import glob
 import json
 import pickle
 from datetime import datetime
@@ -31,6 +30,9 @@ sys.path.insert(0, MODELS_DIR)
 sys.path.insert(0, TRAINERS_DIR)
 sys.path.insert(0, UTILS_DIR)
 
+from shared.lst20_reader import read_lst20_dir
+from shared.syllable_decoder import bmes_to_syllables
+
 # =====================================================
 # Config
 # =====================================================
@@ -41,60 +43,6 @@ DICT_PATH      = os.path.join(BASE, "lst20_dictionary.pkl")
 TEST_DIR       = os.path.join(BACKEND_DIR, "..", "data", "LST20_Corpus", "test")
 RESULTS_DIR    = os.path.join(BACKEND_DIR, "results")
 MAX_SENTENCES  = 50000
-
-
-# =====================================================
-# LST20 reader
-# =====================================================
-def read_lst20_sentences(test_dir: str, max_sentences: int) -> List[Tuple[List[str], List[str]]]:
-    sentences = []
-    files = sorted(glob.glob(os.path.join(test_dir, "*.txt")))
-    current_words, current_pos = [], []
-
-    for filepath in files:
-        with open(filepath, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                parts = line.split("\t")
-                if len(parts) < 2:
-                    continue
-                word, pos = parts[0], parts[1]
-                if word == "_":
-                    if current_words:
-                        sentences.append((current_words[:], current_pos[:]))
-                        current_words, current_pos = [], []
-                        if len(sentences) >= max_sentences:
-                            return sentences
-                else:
-                    current_words.append(word)
-                    current_pos.append(pos)
-
-        if current_words:
-            sentences.append((current_words[:], current_pos[:]))
-            current_words, current_pos = [], []
-
-        if len(sentences) >= max_sentences:
-            break
-
-    return sentences
-
-
-# =====================================================
-# Helpers
-# =====================================================
-def syllables_from_mtus(mtus: List[str], labels: List[str]) -> List[str]:
-    syllables, current = [], []
-    for mtu, label in zip(mtus, labels):
-        if label == "S":
-            if current: syllables.append("".join(current)); current = []
-            syllables.append(mtu)
-        elif label == "B": current = [mtu]
-        elif label == "M": current.append(mtu)
-        elif label == "E": current.append(mtu); syllables.append("".join(current)); current = []
-    if current: syllables.append("".join(current))
-    return syllables
 
 
 def prf(tp: int, fp: int, fn: int) -> Tuple[float, float, float]:
@@ -136,7 +84,7 @@ def evaluate_word(mtu_crf, syl_crf, word_segmenter, sentences: list) -> dict:
 
         syl_feats  = extract_features_for_sentence(mtus)
         syl_labels = syl_crf.predict([syl_feats])[0]
-        syllables  = syllables_from_mtus(mtus, syl_labels)
+        syllables  = bmes_to_syllables(mtus, syl_labels)
 
         pred_words = word_segmenter.segment_with_viterbi(syllables)
 
@@ -172,13 +120,13 @@ def main():
     print("Loading syllable model...")
     with open(SYL_MODEL_PATH, "rb") as f: syl_crf = pickle.load(f)
 
-    from word_segmentation import WordSegmenter
+    from viterbi_segmenter import ViterbiSegmenter
     print("Loading word segmenter...")
-    word_segmenter = WordSegmenter(DICT_PATH)
+    word_segmenter = ViterbiSegmenter(DICT_PATH)
     print("Models loaded.")
 
     print(f"\nReading LST20 test data (max {MAX_SENTENCES} sentences)...")
-    sentences = read_lst20_sentences(TEST_DIR, MAX_SENTENCES)
+    sentences = read_lst20_dir(TEST_DIR, max_sentences=MAX_SENTENCES)
     print(f"Loaded {len(sentences)} sentences.\n")
 
     print("Running word segmentation evaluation...")

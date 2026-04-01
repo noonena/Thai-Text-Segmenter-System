@@ -51,12 +51,9 @@ def get_char_type(ch: str) -> str:
     return "Q"
 
 
-# CC onset clusters (two-consonant onsets treated as a single phonological onset)
- 
- 
 def get_compound_vowel_length(chars: List[str], i: int) -> int:
     """
-    Return the length of a compound vowel (diphthong) starting at position i, or 0.
+    Return the length of a compound vowel (สระประสม) starting at position i, or 0.
       อัว : ั + ว  → 2
       เ-ีย: ี + ย  → 2
       เ-ือ: ื + อ  → 2

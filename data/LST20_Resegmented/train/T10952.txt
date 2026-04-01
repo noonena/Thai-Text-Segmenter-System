@@ -3,8 +3,7 @@ CMO	NN
 ต้อง	AX
 ลด	VV
 เป้า	NN
-ราย	NN
-ได้	NN
+รายได้	NN
 พิษ	NN
 ศก.	NN
 -	PU
@@ -14,8 +13,7 @@ CMO	NN
 2009	NU
 
 นาย	NN
-เสริม	NN
-คุณ	NN
+เสริมคุณ	NN
 คุณาวงศ์	NN
 ประธาน	NN
 เจ้าหน้าที่	NN
@@ -34,8 +32,7 @@ CMO	NN
 ปรับ	VV
 ลด	VV
 เป้า	NN
-ราย	NN
-ได้	NN
+รายได้	NN
 ปี	CL
 นี้	AJ
 ลง	VV
@@ -78,7 +75,8 @@ CMO	NN
 แพร่	VV
 ระบาด	VV
 ของ	PS
-ไข้หวัด	NN
+ไข้	NN
+หวัด	NN
 ใหญ่	VV
 2009	NU
 ทำให้	CC
@@ -87,13 +85,13 @@ CMO	NN
 ปัจจัย	NN
 ลบ	VV
 ค่อนข้าง	AX
-หนักหนาสาหัส	VV
+หนักหนา	VV
+สาหัส	VV
 พอสมควร	VV
 
 แต่	CC
 ผล	NN
-ประกอบ	VV
-การ	FX
+ประกอบการ	VV
 ของ	PS
 CMO	NN
 ปี	NN
@@ -103,8 +101,7 @@ CMO	NN
 แย่	VV
 กว่า	PS
 ปี	CL
-ที่	CC
-แล้ว	AX
+ที่แล้ว	AX
 ที่	CC
 มี	VV
 ความ	FX
@@ -124,8 +121,8 @@ CMO	NN
 ใช้	VV
 นโยบาย	NN
 ควบคุม	VV
-Pro	NN
-jectที่	NN
+Project	NN
+ที่	CC
 มี	VV
 ความ	FX
 เสี่ยง	VV
@@ -144,8 +141,7 @@ jectที่	NN
 เร็ว	VV
 เพราะ	CC
 หา	CC
-กลาก	VV
-ยาว	VV
+กลากยาว	VV
 เชื่อ	VV
 ว่า	CC
 งาน	NN
@@ -158,15 +154,12 @@ jectที่	NN
 ไป	AV
 เรื่อย	VV
 ๆ	PU
-จาก	CC
-ที่	CC
+จากที่	CC
 คาด	VV
 ว่า	CC
 จะ	AX
-รับ	VV
-รู้	VV
-ราย	NN
-ได้	NN
+รับรู้	VV
+รายได้	NN
 ปี	NN
 นี้	AJ
 ก็	CC
@@ -203,8 +196,7 @@ jectที่	NN
 เรา	PR
 คาด	VV
 ว่า	CC
-ราย	NN
-ได้	NN
+รายได้	NN
 น่า	AX
 จะ	AX
 หาย	VV

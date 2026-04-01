@@ -244,19 +244,16 @@ const handleRun = async () => {
     setError(null);
     setOutputHtml("");
 
-try {
-      console.log("Sending segmentation request:", { text: inputText.trim() });
-
+    let creep: ReturnType<typeof setInterval> | null = null;
+    try {
       updateProgress(25, "Sending text to API...");
 
-      // Slowly creep progress from 25 → 70 while waiting for API
       let fakeProgress = 25;
-      const creep = setInterval(() => {
+      creep = setInterval(() => {
         fakeProgress = Math.min(fakeProgress + 2, 70);
         updateProgress(fakeProgress, "Processing...");
       }, 400);
 
-      // Replace apiClient.segmentText with direct fetch
       const response = await fetch(`${API_BASE}/nlp/text-process`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -265,6 +262,7 @@ try {
       });
 
       clearInterval(creep);
+      creep = null;
       const data = await response.json();
 
       if (!data.success || !data.data) {
@@ -272,27 +270,15 @@ try {
       }
 
       updateProgress(75, "Processing segmentation results...");
-      console.log("API Response:", data.data);
 
-      // Check for words in response
       if (!data.data.words) {
         throw new Error("No 'words' field in response");
       }
 
-      // Build wrapped HTML from words
       updateProgress(90, "Building wrapped HTML...");
       const wrappedHtml = buildWrappedHtml(data.data.words, tag, cssClass);
       setOutputHtml(wrappedHtml);
-      
-      // updateProgress(95, "Saving results...");
-      // // Save to history
-      // saveToHistory({
-      //   filename: `text-${Date.now()}.html`,
-      //   segments: data.data.words.length,
-      //   output: wrappedHtml
-      // });
 
-      // Export to training data (non-blocking)
       fetch(`${API_BASE}/nlp/export-training`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -301,20 +287,14 @@ try {
           original_text: inputText.trim(),
           segmented_words: data.data.words,
           confidence: data.data.confidence || 0.95,
-          metadata: {
-            processing_method: "segment_text",
-            tag: tag,
-            css_class: cssClass
-          }
+          metadata: { processing_method: "segment_text", tag, css_class: cssClass }
         }),
-      }).catch(error => {
-        console.warn('Failed to export training data:', error);
-        // Don't fail the whole process if training export fails
-      });
-      
+      }).catch(() => {});
+
       updateProgress(100, "Complete!");
+      await new Promise(r => setTimeout(r, 600));
     } catch (err) {
-      clearInterval(creep);
+      if (creep) clearInterval(creep);
       console.error("❌ Full Error:", err);
       setError(err instanceof Error ? err.message : "Segmentation failed");
     } finally {

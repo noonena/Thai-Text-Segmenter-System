@@ -1,0 +1,15 @@
+{
+  "original_text": "dsfdออเจ้าเอบ",
+  "segmented_words": [
+    "dsfdอ",
+    "อ",
+    "เจ้าเอบ"
+  ],
+  "confidence": 0.95,
+  "metadata": {
+    "processing_method": "segment_text",
+    "tag": "span",
+    "css_class": ""
+  },
+  "timestamp": "20260331_011359"
+}

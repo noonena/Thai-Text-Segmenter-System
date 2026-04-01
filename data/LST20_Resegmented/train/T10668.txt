@@ -17,14 +17,12 @@
 จะ	AX
 ถอน	VV
 หุ้น	NN
-ร้าน	NN
-D	NN
+ร้านD	NN
 -	PU
 Wa	NN
 ไป	VV
 แล้ว	AX
-ก็	CC
-ตาม	CC
+ก็ตาม	CC
 แต่	CC
 เมย์	NN
 -	PU
@@ -60,8 +58,7 @@ Wa	NN
 มา	AV
 ร่วม	VV
 หุ้น	NN
-ทำ	VV
-ร้าน	VV
+ทำร้าน	VV
 กัน	PR
 อีก	AV
 
@@ -87,17 +84,14 @@ Wa	NN
 มี	VV
 กำไร	NN
 แต่	CC
-ไม่	NG
-รู้	VV
+ไม่รู้	NG
 ว่า	CC
 ถ้า	CC
 ทำ	VV
-ต่อ	AV
-ไป	AV
+ต่อไป	AV
 จะ	AX
 เป็น	VV
-ยัง	AX
-ไง	PR
+ยังไง	AX
 จะ	AX
 หา	VV
 ทำเล	NN
@@ -117,8 +111,7 @@ Wa	NN
 เลย	PA
 
 แต่	CC
-ส่วน	NN
-ตัว	NN
+ส่วนตัว	NN
 เรา	PR
 ไม่	NG
 ได้	AX
@@ -130,8 +123,7 @@ Wa	NN
 กัน	PR
 ทุก	NU
 วัน	CL
-เพียง	CC
-แต่	CC
+เพียงแต่	CC
 ไม่	NG
 ได้	AX
 คุย	VV
@@ -145,10 +137,8 @@ Wa	NN
 ก็	CC
 อาจ	AX
 จะ	AX
-ทำ	VV
-ร้าน	VV
-ด้วย	PS
-กัน	PR
+ทำร้าน	VV
+ด้วยกัน	PS
 อีก	AV
 มัน	PR
 มี	VV
@@ -156,8 +146,7 @@ Wa	NN
 เป็น	VV
 ไป	AV
 ได้	AX
-อยู่	AV
-แล้ว	AV
+อยู่แล้ว	AV
 เพราะ	CC
 ที่	CC
 ผ่าน	VV
@@ -167,8 +156,7 @@ Wa	NN
 แฮปปี้	VV
 
 แต่	CC
-ยัง	AX
-ไง	PR
+ยังไง	AX
 ก็	CC
 ขอ	VV
 ดู	AV
@@ -191,8 +179,7 @@ Wa	NN
 อยาก	VV
 เอา	VV
 มา	AV
-ลง	VV
-ทุน	NN
+ลงทุน	NN
 อะไร	PR
 ที่	CC
 มัน	PR
@@ -211,8 +198,7 @@ Wa	NN
 ก็	CC
 อยาก	VV
 มี	VV
-ร้าน	NN
-D	NN
+ร้านD	NN
 -	PU
 wa	NN
 อีก	AV
@@ -220,9 +206,8 @@ wa	NN
 
 แต่	CC
 บาง	NU
-ที	CL
-ถ้า	CC
-เป็น	VV
+ทีถ้	CL
+าเป็น	VV
 ที่	CC
 เดิม	VV
 กับ	PS
@@ -230,8 +215,7 @@ wa	NN
 แบบ	NN
 นี้	AJ
 คน	NN
-เที่ยว	VV
-แป๊บ	NN
+เที่ยวแป๊บ	VV
 เดียว	NU
 เขา	PR
 ก็	CC
@@ -241,8 +225,7 @@ wa	NN
 อยาก	VV
 จะ	AX
 เปลี่ยน	VV
-สถาน	NN
-ที่	NN
+สถานที่	NN
 ดู	VV
 บ้าง	PR
 
@@ -253,7 +236,8 @@ wa	NN
 ยัง	AX
 ไม่	NG
 ปิด	VV
-นะคะ	PA
+นะ	PA
+คะ	PA
 ยัง	AX
 ไป	AV
 เที่ยว	VV
@@ -276,8 +260,7 @@ wa	NN
 อย่างไร	AV
 เพราะ	CC
 ร้าน	NN
-ใกล้	VV
-หมด	VV
+ใกล้หมด	VV
 สัญญา	NN
 เช่า	VV
 แล้ว	AX

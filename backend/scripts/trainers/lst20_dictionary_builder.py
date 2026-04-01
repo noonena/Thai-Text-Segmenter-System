@@ -181,7 +181,7 @@ class LST20Dictionary:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
         with open(filepath, 'wb') as f:
-            pickle.dump(data, f)
+            pickle.dump(self, f)
 
         print(f"Dictionary saved: {json_path}")
         print(f"Dictionary saved: {filepath}")
@@ -192,19 +192,15 @@ class LST20Dictionary:
         if os.path.exists(json_path):
             with open(json_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
+            dictionary = LST20Dictionary()
+            dictionary.words = set(data['words'])
+            dictionary.word_to_pos = defaultdict(Counter, data['word_to_pos'])
+            dictionary.compounds = set(data.get('compounds', []))
+            dictionary.forced = set(data.get('forced', []))
+            dictionary.stats = data['stats']
         else:
             with open(filepath, 'rb') as f:
-                data = pickle.load(f)
-
-        dictionary = LST20Dictionary()
-        if isinstance(data['words'], list):
-            dictionary.words = set(data['words'])
-        else:
-            dictionary.words = data['words']
-        dictionary.word_to_pos = defaultdict(Counter, data['word_to_pos'])
-        dictionary.compounds = set(data.get('compounds', []))
-        dictionary.forced = set(data.get('forced', []))
-        dictionary.stats = data['stats']
+                dictionary = pickle.load(f)
 
         print(f"Loaded {len(dictionary.words):,} words from dictionary")
         return dictionary

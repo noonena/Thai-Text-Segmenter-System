@@ -43,12 +43,14 @@ sys.path.insert(0, TRAINERS_DIR)
 sys.path.insert(0, MODELS_DIR)
 sys.path.insert(0, UTILS_DIR)
 
+from shared.syllable_decoder import bmes_to_syllables
+
 # =====================================================
 # Imports (no "models." prefix since MODELS_DIR is in path)
 # =====================================================
-from lst20_dictionary_builder import LST20Dictionary
-from word_segmentation import WordSegmenter
-from crf_mtu_inference import segment_text_to_mtus
+from lst20_dictionary_builder import LST20Dictionary  # required for pickle to deserialize lst20_dictionary.pkl
+from viterbi_segmenter import ViterbiSegmenter
+from features.mtu_features import segment_text_to_mtus
 from features.syllable_utils import orthographic_syllabify
 
 
@@ -57,7 +59,7 @@ class ThaiTextSegmenter:
 
     def __init__(
         self,
-        mtu_model_path: str,        # kept for API compatibility, no longer used
+        mtu_model_path: str,
         syllable_model_path: str,
         word_segmentation_path: str,
         pos_model_path: str,
@@ -77,7 +79,9 @@ class ThaiTextSegmenter:
             self.pos_crf = pickle.load(f)
 
         print(f"Loading Word Segmenter: {word_segmentation_path}")
-        self.word_segmenter = WordSegmenter(word_segmentation_path, pos_crf=self.pos_crf)
+        with open(word_segmentation_path, "rb") as f:
+            dictionary = pickle.load(f)
+        self.word_segmenter = ViterbiSegmenter(dictionary, pos_crf=self.pos_crf)
         self.dictionary = self.word_segmenter.dictionary
 
         print("Pipeline ready\n")
@@ -89,7 +93,7 @@ class ThaiTextSegmenter:
         if not text or not text.strip():
             return []
         try:
-            from crf_mtu_inference import segment_text_to_mtus
+            from features.mtu_features import segment_text_to_mtus
             mtus_nested, _, _ = segment_text_to_mtus(text, self.mtu_crf)
             return ["".join(mtu) for mtu in mtus_nested]
         except Exception as e:
@@ -102,31 +106,12 @@ class ThaiTextSegmenter:
     def _segment_to_syllables(self, mtus: List[str]) -> List[str]:
         if not mtus:
             return []
-        from syllable_utils import extract_features_for_sentence
+        from features.syllable_utils import extract_features_for_sentence
 
         # Features include NFA (orthographic_syllabify) boundary as a signal
         features = extract_features_for_sentence(mtus)
-        labels = self.syllable_crf.predict([features])[0]
-
-        syllables = []
-        current = []
-        for mtu, label in zip(mtus, labels):
-            if label == "S":
-                if current:
-                    syllables.append("".join(current))
-                    current = []
-                syllables.append(mtu)
-            elif label == "B":
-                current = [mtu]
-            elif label == "M":
-                current.append(mtu)
-            elif label == "E":
-                current.append(mtu)
-                syllables.append("".join(current))
-                current = []
-        if current:
-            syllables.append("".join(current))
-        return syllables
+        labels   = self.syllable_crf.predict([features])[0]
+        return bmes_to_syllables(mtus, labels)
 
     # =====================================================
     # SYLLABLE → WORD ALIGNMENT
@@ -156,22 +141,30 @@ class ThaiTextSegmenter:
     # WORD - Using Viterbi for better compound word detection
     # =====================================================
     def segment_words(self, text: str) -> List[str]:
+        import re
         if not text or not text.strip():
             return []
-        
-        try:
-            mtus = self._segment_to_mtus(text)
-            syllables = self._segment_to_syllables(mtus)
-            return self.word_segmenter.segment(syllables)
-        except Exception as e:
-            print(f"[WARN] Word segmentation failed for '{text}': {e}")
-            return [text]  # Return original text as single word
+
+        results = []
+        for chunk in re.finditer(r'[\u0E00-\u0E7F]+|[^\u0E00-\u0E7F]+', text):
+            token = chunk.group()
+            if re.fullmatch(r'[\u0E00-\u0E7F]+', token):
+                try:
+                    mtus = self._segment_to_mtus(token)
+                    syllables = self._segment_to_syllables(mtus)
+                    results.extend(self.word_segmenter.segment(syllables))
+                except Exception as e:
+                    print(f"[WARN] Word segmentation failed for '{token}': {e}")
+                    results.append(token)
+            else:
+                results.append(token)
+        return results
 
     # =====================================================
     # WORD + POS + SYLLABLE
     # =====================================================
     def segment_with_pos_and_syllables(self, text: str, show_debug=False) -> List[Tuple[str, str, List[str]]]:
-        from pos_features import extract_features
+        from features.pos_features import extract_features
 
         # MTU
         mtus = self._segment_to_mtus(text)

@@ -2,13 +2,11 @@
 ศิลปะ	NN
 
 มิ	NN
-เชบ	NN
-ั	NN
-ง	NN
+เช	NN
+บัง	NN
 เก	NN
-โรพ	NN
-ิ	NN
-ส	NN
+โร	NN
+พิส	NN
 โต	NN
 เลต	NN
 โต	NN
@@ -78,9 +76,8 @@ o	NN
 53	NU
 ที่	CC
 เมือง	NN
-เวน	NN
-ิ	NN
-ซ	NN
+เว	NN
+นิซ	NN
 ประ	NN
 เทศ	NN
 อิ	NN

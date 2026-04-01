@@ -3,8 +3,7 @@
 เกรงใจ	VV
 หลวง	NN
 สื่อ	NN
-ดึง	VV
-เอี่ยว	NN
+ดึงเอี่ยว	NN
 
 '	PU
 ไอซ์	NN
@@ -16,12 +15,10 @@
 '	PU
 สื่อ	NN
 ดึง	VV
-เอี่ยว	NN
-โว	VV
+เอี่ยวโว	NN
 หนุ่ม	NN
 รุม	VV
-จีบ	VV
-เมิน	VV
+จีบเมิน	VV
 ฉายา	NN
 เจ้าแม่	NN
 Party	NN
@@ -54,21 +51,17 @@ Party	NN
 มา	AV
 เอี่ยว	VV
 ด้วย	PS
-ถึง	CC
-แม้	CC
+ถึงแม้	CC
 จะ	AX
 เป็น	VV
 เรื่อง	NN
 จริง	VV
-หรือ	AV
-ไม่	AV
+หรือไม่	AV
 จริง	VV
-ก็	CC
-ตาม	CC
+ก็ตาม	CC
 
 เจ้าตัว	PR
-ก็	CC
-เลย	PS
+ก็เลย	PS
 เกิด	VV
 อาการ	NN
 เกรงใจ	VV
@@ -83,8 +76,7 @@ Party	NN
 ไม่	NG
 ได้	AX
 อยู่	VV
-เมือง	NN
-ไทย	NN
+เมืองไทย	NN
 ก็	CC
 สามารถ	AX
 ดึง	VV
@@ -93,8 +85,7 @@ Party	NN
 ข่าว	NN
 ได้	AX
 จน	CC
-นาง	NN
-ร้าย	VV
+นางร้าย	VV
 หน้า	NN
 สวย	VV
 วอน	VV
@@ -176,8 +167,7 @@ Party	NN
 จะ	AX
 มา	AV
 ชอบ	VV
-เรื่อง	NN
-แบบ	NN
+เรื่องแบบ	NN
 นี้	AJ
 เพราะ	CC
 เขา	PR
@@ -198,12 +188,10 @@ Party	NN
 หนึ่ง	NU
 "	PU
 
-ถือ	VV
-ว่า	CC
+ถือว่า	VV
 เป็น	VV
 การ	FX
-กั๊ก	VV
-กัน	PR
+กั๊กกัน	VV
 หรือเปล่า	AV
 
 "	PU
@@ -227,15 +215,12 @@ Party	NN
 เขียน	VV
 ข่าว	NN
 ไอซ์	NN
-ก็ต	CC
-บ	VV
+ก็ตบ	CC
 ด้วย	PS
-พี่	NN
-หลวง	NN
+พี่หลวง	NN
 อย่าง	NN
 นั้น	AJ
-พี่	NN
-หลวง	NN
+พี่หลวง	NN
 อย่าง	NN
 นี้	AJ
 "	PU
@@ -272,8 +257,7 @@ Party	NN
 แต่	CC
 ยัง	AX
 ไม่	NG
-ถึง	VV
-ว่า	CC
+ถึงว่า	VV
 ใช่	VV
 เลย	PA
 เป็น	VV
@@ -323,10 +307,8 @@ Party	NN
 
 "	PU
 ปาร์ตี้	NN
-บ่อย	VV
-เหรอ	PA
-คะ	PA
-มั่ว	VV
+บ่อยเหรอ	VV
+คะมั่ว	VV
 แล้ว	AX
 ไอซ์	NN
 ยอมรับ	VV
@@ -343,23 +325,20 @@ Party	NN
 ก็	CC
 ไม่	NG
 บ่อย	VV
-หลัง	CC
-จาก	PS
+หลังจาก	CC
 ทานข้าว	NN
 เสร็จ	VV
 ก็	CC
 ไป	AV
 นิดนึง	VV
-แล้ว	AX
-ก็	CC
+แล้วก็	AX
 กลับ	VV
 บ้าน	NN
 แยกย้าย	VV
 ปกติ	VV
 กับ	PS
 ผู้หญิง	NN
-ทั่ว	VV
-ไป	VV
+ทั่วไป	VV
 "	PU
 
 จน	CC
@@ -391,19 +370,15 @@ Party	NN
 ไป	VV
 ก็	CC
 ไม่	NG
-ได้	AX
-เสีย	VV
+ได้เสีย	VV
 ผู้	FX
-เสีย	VV
-คน	NN
+เสียคน	VV
 มัน	PR
 ก็	CC
 ไม่	NG
 ได้	AX
 เมา	VV
-ไม่	NG
-เป็น	VV
-ท่า	NN
+ไม่เป็นท่า	VV
 แค่	AJ
 เรา	PR
 ไม่	NG
@@ -412,5 +387,6 @@ Party	NN
 เจอ	VV
 เพื่อน	NN
 สัก	AJ
-เท่าไหร่	AV
+เท่า	AV
+ไหร่	AJ
 "	PU

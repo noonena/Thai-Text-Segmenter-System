@@ -9,8 +9,7 @@ Sexy	NN
 "	PU
 เป้	NN
 "	PU
-ชม	VV
-สวย	VV
+ชมสวย	VV
 
 "	PU
 ก้อย	NN
@@ -40,42 +39,23 @@ Sexy	NN
 เมื่อ	PS
 "	PU
 ก้อย	NN
-รัช	NN
-วิน	NN
-ว	NN
-งศ์	NN
-วิ	NN
-ริ	NN
-ยะ	NN
+รัชวิน	NN
+วงศ์	NN
+วิริยะ	NN
 "	PU
 ลุก	VV
 ขึ้น	AV
 มา	AV
-ถ่าย	VV
-แบบ	NN
-เซ็ก	VV
-ซี่	VV
+ถ่ายแบบ	VV
+เซ็กซี่	VV
 ให้	VV
 กับ	PS
-นิต	NN
-ย	NN
-สาร	NN
-M	NN
-i	NN
-x	NN
-M	NN
-a	NN
-g	NN
-a	NN
-z	NN
-i	NN
-n	NN
-e	NN
+นิตยสาร	NN
+Mix	NN
+Magazine	NN
 ก็	CC
-ไป	AV
-ยั่ว	VV
-น้ำ	NN
-ลาย	NN
+ไปยั่ว	VV
+น้ำลาย	NN
 ให้	AX
 กับ	PS
 หนุ่ม	NN
@@ -97,8 +77,7 @@ e	NN
 เซ็กซี่	VV
 ถึง	CC
 กับ	CC
-ชม	VV
-ป๋อ	VV
+ชมป๋อ	VV
 งาน	NN
 นี้	AJ
 ทั้ง	NU
@@ -107,8 +86,7 @@ e	NN
 ควง	VV
 คู่	NN
 กัน	PR
-ออก	VV
-งาน	VV
+ออกงาน	VV
 แม็ค	NN
 ยีนส์	NN
 ก็	CC
@@ -120,15 +98,13 @@ e	NN
 ว่า	CC
 
 ก้อย	NN
-ถ่าย	VV
-แบบ	NN
+ถ่ายแบบ	VV
 ล่าสุด	NU
 เซ็กซี่	VV
 มาก	VV
 ๆ	PU
 
-ก้อย	NN
-:	PU
+ก้อย:	NN
 ช่าง	NN
 ภาพ	NN
 เขา	PR
@@ -152,23 +128,19 @@ e	NN
 มา	VV
 ได้	AX
 เซ็กซี่	VV
-หรือ	AV
-ไม่	AV
+หรือไม่	AV
 เซ็กซี่	VV
 อยู่	VV
 ที่	PS
 ช่าง	NN
 ภาพ	NN
 
-ถือ	VV
-ว่า	CC
+ถือว่า	VV
 เซ็กซี่	VV
-ที่	AV
-สุด	AV
+ที่สุด	AV
 หรือเปล่า	PA
 
-ก้อย	NN
-:	PU
+ก้อย:	NN
 เท่า	AV
 ที่	CC
 มี	VV
@@ -182,21 +154,18 @@ e	NN
 นั้น	AJ
 พอ	PS
 เห็น	VV
-แล้ว	AX
-ก็	CC
+แล้วก็	AX
 โอเคนะ	VV
 เพราะ	CC
 ช่าง	NN
 ภาพถ่าย	NN
 สวย	VV
-อยู่	AV
-แล้ว	AV
-นอยซ์	VV
-นิดหน่อย	VV
+อยู่แล้ว	AV
+นอยซ์นิด	VV
+หน่อย	VV
 ว่า	CC
 จะ	AX
-ดู	VV
-โป๊ะ	NN
+ดูโป๊ะ	NN
 ไป	VV
 หรือเปล่า	AV
 ด้วย	PS
@@ -215,8 +184,7 @@ e	NN
 จะ	AX
 มา	AV
 เซ็กซี่	VV
-เป้	NN
-:	PU
+เป้:	NN
 เขา	PR
 มั่น	VV
 ใจสวย	VV
@@ -229,8 +197,7 @@ e	NN
 ไป	AV
 มั๊ย	PA
 
-เป้	NN
-:	PU
+เป้:	NN
 มัน	PR
 ก็	CC
 เป็น	VV
@@ -241,13 +208,11 @@ art	NN
 
 แต่	CC
 ก็	CC
-ไม่	NG
-ว่า	CC
+ไม่ว่า	NG
 เรื่อง	NN
 เซ็กซี่	NN
 
-เป้	NN
-:	PU
+เป้:	NN
 ไม่	NG
 ได้	AX
 ว่า	CC
@@ -267,24 +232,18 @@ art	NN
 
 เป้	NN
 เคย	AX
-ห้าม	VV
-ก้อย	NN
+ห้ามก้อย	VV
 เรื่อง	NN
 เซ็กซี่	NN
 
-เป้	NN
-:	PU
+เป้:	NN
 ตอน	NN
-นี้	AJ
-ชิล	VV
+นี้ชิล	AJ
 อย่าง	FX
 ไง	PR
-ก็	AV
-ได้	AV
-ให้ก้	AX
-อ	NN
-ย	NN
-เลือก	VV
+ก็ได้	AV
+ให้	AX
+ก้อยเลือก	VV
 เอง	PR
 
 ก้อย	NN
@@ -294,18 +253,15 @@ art	NN
 ก่อน	AJ
 มั๊ย	VV
 
-ก้อย	NN
-:	PU
+ก้อย:	NN
 ไม่	NG
 ได้	AX
 ไป	AV
 ขอ	VV
 คือ	VV
-เป้	NN
-เค้า	NN
+เป้เค้า	NN
 เข้าใจ	VV
-อยู่	AV
-แล้ว	AV
+อยู่แล้ว	AV
 มัน	PR
 ก็	CC
 เป็น	VV
@@ -320,8 +276,7 @@ art	NN
 มี	VV
 กระแส	NN
 ตอบรับ	VV
-ก็	AX
-ดี	AX
+ก็ดี	AX
 เพื่อน	NN
 ก็	CC
 ชม	VV
@@ -332,8 +287,7 @@ art	NN
 ตัดสินใจ	VV
 ถ่าย	VV
 
-ก้อย	NN
-:	PU
+ก้อย:	NN
 เรา	PR
 เห็น	VV
 เขา	PR
@@ -341,12 +295,12 @@ art	NN
 ภาพ	NN
 คน	NN
 ที่	CC
-ไม่สวย	NG
+ไม่	NG
+สวย	VV
 แต่	CC
 กับ	PS
 ให้	AX
-ดู	AV
-ดี	VV
+ดูดี	AV
 เพียง	AV
 ครั้ง	CL
 เดียว	NU
@@ -355,8 +309,7 @@ art	NN
 ไม่	NG
 ต้อง	AX
 เซ็กซี่	VV
-ก็	AV
-ได้	AV
+ก็ได้	AV
 ก่อน	AJ
 ทำงาน	VV
 ก้อย	NN
@@ -366,14 +319,12 @@ art	NN
 ต้อง	AX
 เป็น	VV
 อย่างไร	AV
-มาก	VV
-น้อย	VV
+มากน้อย	VV
 ได้	AX
 แค่	AJ
 ไหน	PR
 
-เห็น	VV
-ว่า	CC
+เห็นว่า	VV
 โพลิพลัส	NN
 จะ	AX
 ให้	AX
@@ -381,8 +332,7 @@ art	NN
 ละคร	NN
 ด้วย	PS
 
-เป้	NN
-:	PU
+เป้:	NN
 อัน	CL
 นี้	AJ
 ไม่	NG
@@ -390,15 +340,12 @@ art	NN
 ครับ	PA
 
 แล้ว	AX
-มี	FX
-การ	FX
+มีการ	FX
 มา	AV
 ทาบทาม	VV
-บ้าง	PR
-มั๊ย	VV
+บ้างมั๊ย	PR
 
-เป้	NN
-:	PU
+เป้:	NN
 ไม่	NG
 มี	VV
 ครับ	PA
@@ -412,12 +359,10 @@ art	NN
 ไป	AV
 เล่น	VV
 
-ก้อย	NN
-:	PU
+ก้อย:	NN
 ก็	CC
 มี	VV
-ผู้	FX
-ใหญ่	VV
+ผู้ใหญ่	VV
 เข้า	AV
 มา	AV
 คุย	VV
@@ -436,17 +381,14 @@ art	NN
 คน	NN
 อื่น	AJ
 ได้	AX
-อยู่	AV
-แล้ว	AV
+อยู่แล้ว	AV
 
 อยาก	VV
 เล่น	VV
-ด้วย	PS
-กัน	PR
+ด้วยกัน	PS
 มั๊ย	VV
 
-ก้อย	NN
-:	PU
+ก้อย:	NN
 มัน	PR
 ก็	CC
 ต้อง	AX
@@ -482,11 +424,9 @@ art	NN
 จะ	AX
 ลด	VV
 ลง	AV
-ก็	AV
-ได้	AV
+ก็ได้	AV
 
-เป้	NN
-:	PU
+เป้:	NN
 มัน	PR
 ดู	AV
 ยาก	VV

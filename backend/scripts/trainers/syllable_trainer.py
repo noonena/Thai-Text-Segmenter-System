@@ -25,9 +25,10 @@ sys.path.insert(0, BACKEND_DIR)
 sys.path.insert(0, os.path.join(BACKEND_DIR, 'scripts'))
 sys.path.insert(0, SCRIPT_DIR)
 
-from nlp_utils.features.syllable_features import extract_features_for_sentence
-from nlp_utils.features.char_utils import orthographic_syllabify
-from models.crf_mtu_inference import load_model, segment_text_to_mtus
+from nlp_utils.features.syllable_utils import extract_features_for_sentence
+from nlp_utils.features.syllable_utils import orthographic_syllabify
+from nlp_utils.features.mtu_features import load_model, segment_text_to_mtus
+from shared.syllable_decoder import bmes_to_syllables
 
 
 def get_gold_clusters(word: str) -> list:
@@ -467,9 +468,8 @@ def _load_test_models():
     with open(mtu_model_path, 'rb') as f:
         mtu_crf = pickle.load(f)
 
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'models'))
-    from word_segmentation import WordSegmenter
-    word_segmenter = WordSegmenter(dict_path)
+    from nlp_utils.viterbi_segmenter import ViterbiSegmenter
+    word_segmenter = ViterbiSegmenter(dict_path)
 
     return syllable_crf, mtu_crf, word_segmenter
 
@@ -487,32 +487,12 @@ def _load_test_cases():
 
 def _run_pipeline(text, mtu_crf, syllable_crf):
     """Run MTU → syllable stages on one text. Returns (mtus, mtu_char_bmes, syllable_bmes, syllables)."""
-    from models.crf_mtu_inference import segment_text_to_mtus
-
     mtus_nested, mtu_char_bmes, _ = segment_text_to_mtus(text, mtu_crf)
     mtus = ["".join(m) for m in mtus_nested]
 
-    features = extract_features_for_sentence(mtus)
-    bmes     = list(syllable_crf.predict([features])[0])
-
-    syllables = []
-    current   = []
-    for mtu, label in zip(mtus, bmes):
-        if label == 'S':
-            if current:
-                syllables.append(''.join(current))
-                current = []
-            syllables.append(mtu)
-        elif label == 'B':
-            current = [mtu]
-        elif label == 'M':
-            current.append(mtu)
-        elif label == 'E':
-            current.append(mtu)
-            syllables.append(''.join(current))
-            current = []
-    if current:
-        syllables.append(''.join(current))
+    features  = extract_features_for_sentence(mtus)
+    bmes      = list(syllable_crf.predict([features])[0])
+    syllables = bmes_to_syllables(mtus, bmes)
 
     return mtus, mtu_char_bmes, bmes, syllables
 

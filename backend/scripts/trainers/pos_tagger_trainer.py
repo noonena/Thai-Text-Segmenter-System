@@ -21,6 +21,7 @@ sys.path.insert(0, BACKEND_DIR)
 sys.path.insert(0, os.path.join(BACKEND_DIR, 'scripts'))
 
 from nlp_utils.features.pos_features import extract_features, extract_labels
+from shared.lst20_reader import read_lst20_file
 
 
 # ======================
@@ -47,37 +48,6 @@ MAX_SENTENCES = 100000   # increase if memory allows
 
 
 # ======================
-# DATA READER
-# ======================
-def read_lst20_for_pos(filepath):
-    sentences = []
-    words, tags = [], []
-
-    with open(filepath, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-
-            if not line:
-                if words:
-                    sentences.append((words, tags))
-                    words, tags = [], []
-                continue
-
-            parts = line.split("\t")
-            if len(parts) >= 2:
-                word, pos = parts[0], parts[1]
-                if word == "_":
-                    continue
-                words.append(word)
-                tags.append(pos)
-
-    if words:
-        sentences.append((words, tags))
-
-    return sentences
-
-
-# ======================
 # DATA PREP
 # ======================
 def prepare_training_data(train_dir):
@@ -86,7 +56,7 @@ def prepare_training_data(train_dir):
     print(f"Found {len(files)} LST20 files in {os.path.basename(train_dir)}")
 
     for filepath in files:
-        for words, pos_tags in read_lst20_for_pos(filepath):
+        for words, pos_tags in read_lst20_file(filepath):
             X.append(extract_features(words))
             y.append(extract_labels(pos_tags))
 

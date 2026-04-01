@@ -31,23 +31,19 @@ Star	NN
 "	PU
 ก่อน	CC
 เข้า	VV
-วง	NN
-การ	NN
+วงการ	NN
 
-หลัง	CC
-จาก	CC
+หลังจาก	CC
 มี	VV
 ข่าว	NN
 จ๊วบ	VV
 ปาก	NN
-ผู้	NN
-ชาย	NN
+ผู้ชาย	NN
 ใน	PS
 บาร์เกย์	NN
 ภาพ	NN
 ความ	FX
-เป็น	VV
-แมน	VV
+เป็นแมน	VV
 ของ	PS
 "	PU
 ฟลุค	NN
@@ -55,9 +51,8 @@ Star	NN
 ธรรมมล	NN
 หรือ	CC
 ฟลุค	NN
-เดอะ	NN
-สตาร์	NN
-"	PU
+เดอะส	NN
+ตาร์"	NN
 ก็	CC
 ไม่	NG
 มี	VV
@@ -69,25 +64,22 @@ Star	NN
 ยังคง	AX
 ลบล้าง	VV
 ภาพ	NN
-เหล่านั้น	CL
+เหล่า	CL
+นั้น	AJ
 ไม่	NG
 ได้	AX
 ขนาด	NN
 ออก	VV
-ราย	NN
-การ	NN
-ตี	NN
-สิบ	NU
+รายการ	NN
+ตีสิบ	NU
 จน	CC
 ให้	CC
-ป๊า	NN
-หรือ	CC
+ป๊าหรือ	CC
 พ่อ	NN
 บุญธรรม	AJ
 ยืนยัน	VV
 แล้ว	AX
-ก็	CC
-ตาม	CC
+ก็ตาม	CC
 
 งาน	NN
 นี้	AJ
@@ -121,8 +113,7 @@ Star	NN
 เดิม	AV
 ก็	CC
 เคย	AX
-เข้า	AV
-ไป	AV
+เข้าไป	AV
 ดู	VV
 ใน	PS
 เว็บ	NN
@@ -151,21 +142,19 @@ Star	NN
 "	PU
 ก็	CC
 มี	VV
-บ้าง	AV
-นิดหน่อย	AV
+บ้างนิด	AV
+หน่อย	AV
 "	PU
 
 ฟิดแบก	NN
 กับ	PS
-คุณ	PR
-พ่อ	NN
+คุณพ่อ	PR
 เป็น	VV
 อย่างไร	AV
 บ้าง	AV
 
 "	PU
-ก็	CC
-ดี	VV
+ก็ดี	CC
 ขึ้น	AV
 ช่วง	NN
 ที่	CC
@@ -180,8 +169,7 @@ Star	NN
 ถึง	CC
 มา	AV
 อยู่	VV
-กับ	PS
-ป๊า	NN
+กับป๊า	PS
 ทำไม	AV
 ถึง	CC
 ไม่	NG
@@ -207,21 +195,18 @@ Star	NN
 ไม่	NG
 อยาก	VV
 พูด	VV
-อยู่	AX
-แล้ว	AX
+อยู่แล้ว	AX
 
 แต่	CC
 ให้	CC
-พ่อ	NN
-แท้	VV
+พ่อแท้	NN
 ๆ	PU
 ได้	AX
 ออก	AV
 มา	AV
 พูด	VV
 บ้าง	AV
-ว่า	CC
-ที่	CC
+ว่าที่	CC
 จริง	VV
 ๆ	PU
 แล้ว	AX
@@ -247,8 +232,7 @@ Star	NN
 ให้ป๊า	CC
 รู้สึก	VV
 สบายใจ	VV
-คุณ	PR
-พ่อ	NN
+คุณพ่อ	PR
 ได้	AX
 พูด	VV
 แล้ว	AX
@@ -260,16 +244,14 @@ Star	NN
 ไป	AV
 อยู่	VV
 กับ	PS
-คุณ	PR
-พ่อ	NN
+คุณพ่อ	PR
 มั๊ย	PA
 
 "	PU
 ไม่	NG
 ครับ	PA
 เพราะ	CC
-คุณ	PR
-พ่อ	NN
+คุณพ่อ	PR
 ท่าน	PR
 ก็	CC
 มี	VV
@@ -289,7 +271,8 @@ Star	NN
 คน	CL
 เดียว	NU
 ได้	AX
-ช่วยเหลือ	VV
+ช่วย	VV
+เหลือ	VV
 ตัวเอง	PR
 ช่วย	VV
 ป๊า	NN
@@ -299,8 +282,7 @@ Star	NN
 สิ่ง	NN
 ที่	CC
 เรา	PR
-เป็น	VV
-อยู่	VV
+เป็นอยู่	VV
 ครับ	PA
 ไม่	NG
 จำเป็น	VV
@@ -313,13 +295,11 @@ Star	NN
 
 ฟลุค	NN
 อยู่	VV
-ป๊า	NN
-หลาย	AJ
+ป๊าหลาย	AJ
 คน	CL
 มอง	VV
 ว่า	CC
-ป๊า	NN
-เลี้ยง	VV
+ป๊าเลี้ยง	VV
 ฟลุค	NN
 ให้	CC
 เป็น	VV
@@ -329,8 +309,7 @@ Star	NN
 
 "	PU
 ไม่	NG
-ชัวร์	VV
-ใคร	PR
+ชัวร์ใคร	VV
 ที่	CC
 ได้	AX
 เจอ	VV
@@ -362,13 +341,11 @@ Star	NN
 สนิท	VV
 กัน	AV
 คือ	VV
-เราช	PR
-อบ	VV
+เราชอบ	PR
 ฟัง	VV
 เพลง	NN
 เหมือนกัน	AV
-พี่	NN
-กิ่ง	NN
+พี่กิ่ง	NN
 เล่น	VV
 อยู่	VV
 แถว	NN
@@ -376,16 +353,14 @@ Star	NN
 ซึ่ง	CC
 อยู่	VV
 แถว	NN
-บ้าน	NN
-ฟลุค	NN
+บ้านฟลุค	NN
 ก็	CC
 เจอ	VV
 รู้จัก	VV
 ร้าน	NN
 ฟัง	VV
 เพลง	NN
-ด้วย	PS
-กัน	AV
+ด้วยกัน	PS
 เยอะ	AV
 ก็	CC
 มี	VV
@@ -465,8 +440,7 @@ Star	NN
 ตัวเอง	PR
 "	PU
 
-กลับ	VV
-มาส	AV
+กลับมาส	VV
 ปาร์ค	VV
 เหมือน	VV
 เดิม	AV
@@ -498,12 +472,13 @@ Star	NN
 
 เรื่อง	NN
 ละคร	NN
-พระจันทร์	NN
-สี	NN
-รุ้ง	NN
+พระ	NN
+จันทร์	NN
+สีรุ้ง	NN
 เหมือน	VV
 ชีวิต	NN
-จริงฟลุค	XX
+จริง	XX
+ฟลุค	XX
 มาก	AV
 
 "	PU

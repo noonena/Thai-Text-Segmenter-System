@@ -1,34 +1,36 @@
 """
-Word Segmentation Module
-Takes syllables as input and produces word segmentation using Viterbi DP
+Viterbi Segmenter
+Generic Viterbi DP segmenter used across the pipeline.
+Takes syllables as input and produces word segmentation
 over the LST20 dictionary.
 """
 
-import sys
 import os
+import sys
 import math
-from typing import List, Tuple, Set
+from typing import List, Tuple
 
-# Path setup must come before any local imports
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(SCRIPT_DIR, '..'))
-sys.path.insert(0, os.path.join(SCRIPT_DIR, '..', '..'))
-sys.path.insert(0, os.path.join(SCRIPT_DIR, '..', '..', 'nlp_utils'))
+TRAINERS_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..', 'trainers'))
+
+sys.path.insert(0, TRAINERS_DIR)
+sys.path.insert(0, os.path.join(SCRIPT_DIR, 'features'))
 
 from lst20_dictionary_builder import LST20Dictionary
-from nlp_utils.features.char_utils import is_number, is_valid_thai_word
+from features.char_utils import is_number, is_valid_thai_word
 
-# Words that must always be treated as a single unit, regardless of frequency.
-# Add entries here when the Viterbi incorrectly splits a known compound.
 
-class WordSegmenter:
+class ViterbiSegmenter:
     """
-    Word segmentation using Viterbi DP over syllable units and the LST20 dictionary.
+    Viterbi DP segmenter over syllable units and the LST20 dictionary.
     """
 
-    def __init__(self, dictionary_path: str, pos_crf=None):
-        print(f"   Loading LST20Dictionary from: {dictionary_path}")
-        self.dictionary = LST20Dictionary.load(dictionary_path)
+    def __init__(self, dictionary_input, pos_crf=None):
+        if isinstance(dictionary_input, str):
+            print(f"   Loading LST20Dictionary from: {dictionary_input}")
+            self.dictionary = LST20Dictionary.load(dictionary_input)
+        else:
+            self.dictionary = dictionary_input
         self.pos_crf = pos_crf
         print(f"   Dictionary loaded: {len(self.dictionary.words):,} words")
 
@@ -63,70 +65,44 @@ class WordSegmenter:
             return math.log(total + 1)
         return 0.0
 
-    def _generate_candidates_from_units(self, units: List[str], start: int) -> List[Tuple[str, int]]:
-        """Generate word candidates by joining 1–8 consecutive syllables from position start."""
+    def _syllable_to_words(self, syllables: List[str], start: int) -> List[Tuple[str, int]]:
+        """Try joining 1–8 syllables from start. Return those that are valid words."""
         candidates = []
-        n = len(units)
+        n = len(syllables)
         max_length = min(8, n - start)
 
         for length in range(1, max_length + 1):
-            candidate = "".join(units[start:start + length])
+            candidate = "".join(syllables[start:start + length])
             if self.dictionary.contains(candidate) or is_valid_thai_word(candidate):
                 candidates.append((candidate, length))
 
         return candidates
 
-    def _score_candidate_v2(
+    def _score_word(
         self,
         candidate: str,
         unit_length: int,
         position: int,
         total_length: int,
     ) -> float:
-        """
-        Score a candidate word. Every word pays BOUNDARY_COST once,
-        which discourages over-segmentation. Dictionary words get a
-        higher base bonus than unknown words. Multi-syllable words
-        get an additional compound_bonus to favour joining syllables.
-        """
         BOUNDARY_COST = -0.6
 
         if self.dictionary.contains(candidate):
             if candidate in self.dictionary.forced:
-                return 1000.0  # always wins — never split
+                return 1000.0
             freq = self._get_word_frequency(candidate)
-            # Use log(freq) so high-frequency single words don't dominate over
-            # longer dictionary matches (e.g. น่า freq=2051 would beat น่ารัก).
-            # Larger bonus_per_syl ensures longer dict words win (longest match preference).
             bonus_per_syl = 15.0
             compound_bonus = min(unit_length - 1, 2) * bonus_per_syl
             return BOUNDARY_COST + math.log(freq + 1) + 2.5 + compound_bonus
         elif is_valid_thai_word(candidate):
             if unit_length == 2:
-                # Unknown 2-syllable compound — score just above low-frequency part
-                # pairs (e.g. ตา+กลม=7.21) but below medium-frequency pairs
-                # (e.g. ฉัน+รัก=7.63) to avoid over-merging common separate words.
-                return BOUNDARY_COST + 1.0 + 7.1   # = 7.5
-            return BOUNDARY_COST - 1.0  # single or 3+ syllable unknown: keep penalty
+                return BOUNDARY_COST + 1.0 + 7.1
+            return BOUNDARY_COST - 1.0
         else:
             return BOUNDARY_COST + (-2.0)
 
     def _repair_syllables(self, syllables: List[str]) -> List[str]:
-        """
-        Pre-processing: fix stolen-consonant errors in syllables BEFORE Viterbi.
-
-        When the syllable CRF merges the coda consonant of one word with the
-        onset of the next (e.g. 'วิต'+'กว่า' instead of 'วิตก'+'ว่า'), the
-        syllable that loses its coda is left as a fragment not in the dictionary.
-
-        Rule: if syllable[i] is NOT in the dictionary but syllable[i] + syllable[i+1][0]
-        IS a real dictionary word AND syllable[i+1][1:] is also a real dictionary word,
-        move the first character of syllable[i+1] onto syllable[i].
-
-        Example: ['วิต', 'กว่า']
-          'วิต' not in dict, 'วิตก' in dict (real), 'ว่า' in dict (real)
-          → ['วิตก', 'ว่า']
-        """
+        """Fix stolen-consonant errors in syllables before Viterbi."""
         if len(syllables) < 2:
             return syllables
 
@@ -148,11 +124,7 @@ class WordSegmenter:
         return result
 
     def segment_with_viterbi(self, syllables: List[str]) -> List[str]:
-        """
-        Viterbi word segmentation over syllable units.
-        Syllables are the atomic unit — never MTUs.
-        Falls back to returning each syllable as its own word if no path is found.
-        """
+        """Viterbi word segmentation over syllable units."""
         if not syllables:
             return []
 
@@ -165,9 +137,9 @@ class WordSegmenter:
         for pos in range(n):
             if dp[pos] == -float('inf'):
                 continue
-            for candidate, length in self._generate_candidates_from_units(syllables, pos):
+            for candidate, length in self._syllable_to_words(syllables, pos):
                 next_pos = pos + length
-                total_score = dp[pos] + self._score_candidate_v2(candidate, length, pos, n)
+                total_score = dp[pos] + self._score_word(candidate, length, pos, n)
                 if total_score > dp[next_pos]:
                     dp[next_pos] = total_score
                     back[next_pos] = (pos, candidate)
@@ -188,10 +160,7 @@ class WordSegmenter:
     def segment_with_viterbi_kbest(
         self, syllables: List[str], k: int = 5
     ) -> List[Tuple[float, List[str]]]:
-        """
-        Returns the top-k segmentations as (score, words) pairs, best first.
-        Used by the comparison/benchmarking script only.
-        """
+        """Returns the top-k segmentations as (score, words) pairs, best first."""
         if not syllables:
             return [(0.0, [])]
 
@@ -204,8 +173,8 @@ class WordSegmenter:
             if not beams[pos]:
                 continue
             for base_score, words_so_far in beams[pos]:
-                for candidate, length in self._generate_candidates_from_units(syllables, pos):
-                    word_score = self._score_candidate_v2(candidate, length, pos, n)
+                for candidate, length in self._syllable_to_words(syllables, pos):
+                    word_score = self._score_word(candidate, length, pos, n)
                     next_pos = pos + length
                     beams[next_pos].append(
                         (base_score + word_score, words_so_far + [candidate])
@@ -223,16 +192,11 @@ class WordSegmenter:
         lam: float = 0.3,
         k: int = 5,
     ) -> List[str]:
-        """
-        1. Generate top-k candidates via k-best Viterbi.
-        2. Score each with the POS CRF (sum of log max-marginal per token).
-        3. Return candidate with highest viterbi_score + λ × pos_score.
-        Used by the comparison/benchmarking script only.
-        """
-        try:
-            from features.pos_features import extract_features as _pos_features
-        except ImportError:
-            from pos_features import extract_features as _pos_features
+        """k-best Viterbi reranked by POS CRF."""
+        # try:
+        from features.pos_features import extract_features as _pos_features
+        # except ImportError:
+        #     from pos_features import extract_features as _pos_features
 
         candidates = self.segment_with_viterbi_kbest(syllables, k=k)
         if candidates:
@@ -241,8 +205,6 @@ class WordSegmenter:
             best_words: List[str] = syllables[:]
         best_combined = -float('inf')
 
-        # If top candidate wins by a large margin, Viterbi is confident —
-        # skip POS reranking to avoid overriding correct decisions (e.g. รายงาน).
         if len(candidates) >= 2:
             gap = candidates[0][0] - candidates[1][0]
             if gap > 5.0:

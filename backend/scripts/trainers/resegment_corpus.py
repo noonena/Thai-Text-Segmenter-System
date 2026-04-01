@@ -17,18 +17,23 @@ import pickle
 from collections import Counter
 
 # ─── Path setup ────────────────────────────────────────────────
-SCRIPT_DIR  = os.path.dirname(os.path.abspath(__file__))
-BACKEND_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
-MODELS_DIR  = os.path.join(BACKEND_DIR, 'models')
-NLP_DIR     = os.path.join(BACKEND_DIR, 'scripts', 'nlp_utils')
+SCRIPT_DIR   = os.path.dirname(os.path.abspath(__file__))
+BACKEND_DIR  = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
+SCRIPTS_DIR  = os.path.join(BACKEND_DIR, 'scripts')
+MODELS_DIR   = os.path.join(BACKEND_DIR, 'models')
+NLP_DIR      = os.path.join(SCRIPTS_DIR, 'nlp_utils')
 
 sys.path.insert(0, BACKEND_DIR)
+sys.path.insert(0, SCRIPTS_DIR)
 sys.path.insert(0, NLP_DIR)
 sys.path.insert(0, SCRIPT_DIR)
 sys.path.insert(0, os.path.join(SCRIPT_DIR, 'models'))
 
 if sys.platform == 'win32':
     sys.stdout.reconfigure(encoding='utf-8')
+
+from shared.lst20_reader import read_lst20_file
+from shared.syllable_decoder import bmes_to_syllables
 
 # ─── Corpus paths ──────────────────────────────────────────────
 DATA_DIR    = os.path.abspath(os.path.join(BACKEND_DIR, '..', 'data'))
@@ -44,8 +49,8 @@ SPLITS = ['train', 'eval', 'test']
 
 def load_pipeline():
     """Load MTU CRF, syllable CRF, and word segmenter."""
-    from word_segmentation import WordSegmenter
-    from models.crf_mtu_inference import segment_text_to_mtus
+    from nlp_utils.viterbi_segmenter import ViterbiSegmenter
+    from nlp_utils.features.mtu_features import segment_text_to_mtus
     from nlp_utils.features.syllable_utils import extract_features_for_sentence
 
     print("Loading models...")
@@ -57,42 +62,18 @@ def load_pipeline():
     with open(os.path.join(MODELS_DIR, 'syllable_crf_model.pkl'), 'rb') as f:
         syllable_crf = pickle.load(f)
     print("  Syllable model loaded")
-
-    word_segmenter = WordSegmenter(os.path.join(MODELS_DIR, 'lst20_dictionary.pkl'))
+    with open(os.path.join(MODELS_DIR, 'lst20_dictionary.pkl'), 'rb') as f:
+        dictionary = pickle.load(f)
+    viterbi_word = ViterbiSegmenter(dictionary)
     print("  Word segmenter loaded")
 
-    return mtu_crf, syllable_crf, word_segmenter, segment_text_to_mtus, extract_features_for_sentence
+    return mtu_crf, syllable_crf, viterbi_word, segment_text_to_mtus, extract_features_for_sentence
+
 
 
 # ══════════════════════════════════════════════════════════════
-# 2. CORPUS READER
+# 2. CORPUS READER  (see shared/lst20_reader.py)
 # ══════════════════════════════════════════════════════════════
-
-def read_lst20_file(filepath):
-    """Read one LST20 file. Returns list of (words, tags) sentences."""
-    sentences = []
-    words, tags = [], []
-
-    with open(filepath, 'r', encoding='utf-8') as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                if words:
-                    sentences.append((words, tags))
-                    words, tags = [], []
-                continue
-            parts = line.split('\t')
-            if len(parts) >= 2:
-                word, pos = parts[0], parts[1]
-                if word == '_':
-                    continue
-                words.append(word)
-                tags.append(pos)
-
-    if words:
-        sentences.append((words, tags))
-
-    return sentences
 
 
 # ══════════════════════════════════════════════════════════════
@@ -107,26 +88,8 @@ def resegment_sentence(text, mtu_crf, syllable_crf, word_segmenter,
         mtus = ["".join(m) for m in mtus_nested]
 
         features  = extract_features_for_sentence(mtus)
-        bmes      = list(syllable_crf.predict([features])[0])
-
-        syllables = []
-        current   = []
-        for mtu, label in zip(mtus, bmes):
-            if label == 'S':
-                if current:
-                    syllables.append(''.join(current))
-                    current = []
-                syllables.append(mtu)
-            elif label == 'B':
-                current = [mtu]
-            elif label == 'M':
-                current.append(mtu)
-            elif label == 'E':
-                current.append(mtu)
-                syllables.append(''.join(current))
-                current = []
-        if current:
-            syllables.append(''.join(current))
+        labels    = list(syllable_crf.predict([features])[0])
+        syllables = bmes_to_syllables(mtus, labels)
 
         return word_segmenter.segment(syllables)
 

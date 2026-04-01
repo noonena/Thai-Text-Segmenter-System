@@ -62,7 +62,15 @@
       "Bash(wc:*)",
       "Bash(python -c \":*)",
       "Bash(python -u -c \":*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(backend/venv/Scripts/pip install:*)",
+      "Bash(backend/venv/Scripts/python -c \"import pptx; print\\(pptx.__version__\\)\")",
+      "Bash(backend/venv/Scripts/python generate_presentation.py)",
+      "Bash(backend/venv/Scripts/python -c \":*)",
+      "Bash(backend/venv/Scripts/python test/mtu_crf_test/test_mtu.py)",
+      "Bash(backend/venv/Scripts/python -X utf8 test/mtu_crf_test/test_mtu.py)",
+      "Bash(backend/venv/Scripts/python -X utf8 -c \":*)",
+      "Bash(backend/venv/Scripts/python -X utf8 test/test_model/test_mtu.py)"
     ]
   }
 }
