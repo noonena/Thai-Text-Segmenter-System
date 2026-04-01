@@ -56,7 +56,7 @@ def generate_daily_id(conn: sqlite3.Connection, table: str) -> str:
             seq = int(numeric_part) + 1 if numeric_part else 1
     else:
         seq = 1
-    
+
     return f"{seq:03d}"
 
 
@@ -258,10 +258,11 @@ def unlock_account(username: str) -> bool:
 def init_database():
     """Initialize database tables and default data"""
     os.makedirs(DB_DIR, exist_ok=True)
-    
+
+    # TODO:: Add proper database migrations instead of this crude "ALTER TABLE if not exists" approach.
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
-        
+
         # Create roles table
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS roles (
@@ -287,7 +288,7 @@ def init_database():
             cursor.execute("ALTER TABLE users ADD COLUMN is_locked INTEGER NOT NULL DEFAULT 0")
         except sqlite3.OperationalError:
             pass
-        
+
         # Create users table
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
@@ -319,14 +320,14 @@ def init_database():
         # Create default roles if they don't exist
         cursor.execute("SELECT COUNT(*) FROM roles")
         role_count = cursor.fetchone()[0]
-        
+
         if role_count == 0:
             # Create default roles
             cursor.execute("INSERT INTO roles (id, name, description, is_system) VALUES (?, ?, ?, 1)",
                          ("001", "admin", "System administrator with full access"))
             cursor.execute("INSERT INTO roles (id, name, description, is_system) VALUES (?, ?, ?, 0)",
                          ("002", "user", "Regular user with limited access"))
-            
+
             # Create default admin user
             admin_password_hash = hash_password("admin123")
             cursor.execute('''
@@ -335,6 +336,7 @@ def init_database():
             ''', ("001", "admin", admin_password_hash, "001", "System Administrator"))
 
             print("[WARNING] Default admin user created with password 'admin123'. Change this immediately!")
+
         # Ensure existing system roles are flagged (migration for pre-existing DBs)
         cursor.execute("UPDATE roles SET is_system = 1 WHERE name = 'admin' AND is_system = 0")
         cursor.execute("UPDATE roles SET is_system = 0 WHERE name = 'user' AND is_system = 1")

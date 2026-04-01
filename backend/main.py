@@ -7,10 +7,10 @@ from app import app
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     print("Starting Thai Text Segmenter Backend...")
-    print("API Documentation: http://localhost:8002/docs")
-    
+    print("API Documentation: http://localhost:8000/docs")
+
     uvicorn.run(
         app,
         host="0.0.0.0",

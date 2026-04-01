@@ -71,17 +71,17 @@ class ViterbiSegmenter:
         n = len(syllables)
         max_length = min(8, n - start)
 
-        for length in range(1, max_length + 1):
-            candidate = "".join(syllables[start:start + length])
+        for syllable_count in range(1, max_length + 1):
+            candidate = "".join(syllables[start : (start + syllable_count)])
             if self.dictionary.contains(candidate) or is_valid_thai_word(candidate):
-                candidates.append((candidate, length))
+                candidates.append((candidate, syllable_count))
 
         return candidates
 
     def _score_word(
         self,
         candidate: str,
-        unit_length: int,
+        syllable_count: int,
         position: int,
         total_length: int,
     ) -> float:
@@ -92,10 +92,10 @@ class ViterbiSegmenter:
                 return 1000.0
             freq = self._get_word_frequency(candidate)
             bonus_per_syl = 15.0
-            compound_bonus = min(unit_length - 1, 2) * bonus_per_syl
+            compound_bonus = min(syllable_count - 1, 2) * bonus_per_syl
             return BOUNDARY_COST + math.log(freq + 1) + 2.5 + compound_bonus
         elif is_valid_thai_word(candidate):
-            if unit_length == 2:
+            if syllable_count == 2:
                 return BOUNDARY_COST + 1.0 + 7.1
             return BOUNDARY_COST - 1.0
         else:
@@ -137,6 +137,11 @@ class ViterbiSegmenter:
         for pos in range(n):
             if dp[pos] == -float('inf'):
                 continue
+            # พัด ลม
+            # ['พัด', 'ลม'] # syllables
+            # พัดลม
+            # ['พัดลม'] -> candidate='พัดลม', length=2 # word candidates
+            # 0, 1
             for candidate, length in self._syllable_to_words(syllables, pos):
                 next_pos = pos + length
                 total_score = dp[pos] + self._score_word(candidate, length, pos, n)
