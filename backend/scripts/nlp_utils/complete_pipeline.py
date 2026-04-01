@@ -48,7 +48,7 @@ from shared.syllable_decoder import bmes_to_syllables
 # =====================================================
 # Imports (no "models." prefix since MODELS_DIR is in path)
 # =====================================================
-import LST20Dictionary  # required for pickle to deserialize lst20_dictionary.pkl
+from lst20_dictionary_builder import LST20Dictionary  # required for pickle to deserialize lst20_dictionary.pkl
 from viterbi_segmenter import ViterbiSegmenter
 from features.mtu_features import segment_text_to_mtus
 from features.syllable_utils import orthographic_syllabify
