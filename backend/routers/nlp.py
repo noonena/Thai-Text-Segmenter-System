@@ -6,11 +6,10 @@ Uses complete_pipeline.py from backend/scripts/nlp_utils/
 import os
 import sys
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
 import re
-from utils.database import require_auth
 
 # =====================================================
 # Setup paths for NLP pipeline
@@ -124,7 +123,7 @@ class ExportTrainingRequest(BaseModel):
 # Routes
 # =====================================================
 @router.post("/process-html")
-async def process_html(request: ProcessHtmlRequest, _user: dict = Depends(require_auth)):
+async def process_html(request: ProcessHtmlRequest):
     """Process HTML by segmenting Thai text and wrapping words with <wbr> tags"""
     try:
         if not request.html or not request.html.strip():
@@ -169,7 +168,7 @@ async def process_html(request: ProcessHtmlRequest, _user: dict = Depends(requir
 
 
 @router.post("/text-process")
-async def segment_text(request: SegmentTextRequest, _user: dict = Depends(require_auth)):
+async def segment_text(request: SegmentTextRequest):
     """Segment plain Thai text into words using full NLP pipeline"""
     try:
         if not request.text or not request.text.strip():
@@ -213,7 +212,7 @@ async def segment_text(request: SegmentTextRequest, _user: dict = Depends(requir
 
 
 @router.post("/export-training")
-async def export_training_data(request: ExportTrainingRequest, _user: dict = Depends(require_auth)):
+async def export_training_data(request: ExportTrainingRequest):
     """Save training data for model retraining"""
     try:
         import json

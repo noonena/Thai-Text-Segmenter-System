@@ -212,8 +212,7 @@
 // }
 import { useState } from "react";
 import { Play, Trash2, Loader2 } from "lucide-react";
-import { saveToHistory } from "./HistoryPage";
-import { useProcessing } from "../contexts/ProcessingContext";
+import { useProcessing } from "../contexts/useProcessing";
 
 type Props = {
   settings?: {  // ← Made optional
@@ -257,7 +256,6 @@ const handleRun = async () => {
       const response = await fetch(`${API_BASE}/nlp/text-process`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ text: inputText.trim() }),
       });
 
@@ -282,7 +280,6 @@ const handleRun = async () => {
       fetch(`${API_BASE}/nlp/export-training`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({
           original_text: inputText.trim(),
           segmented_words: data.data.words,

@@ -4,7 +4,6 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer,
 } from "recharts";
-import { useAuth } from "../contexts/AuthContext";
 
 const NLP_API = import.meta.env.VITE_API_BASE ?? "http://localhost:8000/api";
 
@@ -23,22 +22,20 @@ interface EvalResults {
 const pct = (v: number) => (v * 100).toFixed(1);
 
 function StatisticsPage() {
-  const { authFetch } = useAuth();
   const [activeSection, setActiveSection] = useState<"overview" | "segmentation" | "pos">("overview");
   const [data, setData] = useState<EvalResults | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const fetchStats = async () => {
     try {
-      const res = await authFetch(`${NLP_API}/statistics`);
+      const res = await fetch(`${NLP_API}/statistics`);
       if (!res.ok) {
         if (res.status === 404) { setError("not_found"); return; }
-        if (res.status === 401) return;
         throw new Error(`HTTP ${res.status}`);
       }
       setData(await res.json());
       setError(null);
-    } catch (e) {
+    } catch {
       setError("fetch_failed");
     } finally {
       setLoading(false);

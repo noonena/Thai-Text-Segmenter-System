@@ -1,15 +1,14 @@
 """
 Main entry point for Thai Text Segmenter Backend
 """
-import sys
-import os
 from app import app
 
-if __name__ == "__main__":
+def run():
     import uvicorn
 
     print("Starting Thai Text Segmenter Backend...")
     print("API Documentation: http://localhost:8000/docs")
+    print("Press Ctrl+C to stop the server\n")
 
     uvicorn.run(
         app,
@@ -17,3 +16,6 @@ if __name__ == "__main__":
         port=8000,
         log_level="info"
     )
+
+if __name__ == "__main__":
+    run()

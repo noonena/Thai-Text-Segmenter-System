@@ -1,6 +1,5 @@
-import React from 'react';
 import { X } from 'lucide-react';
-import { useProcessing } from '../contexts/ProcessingContext';
+import { useProcessing } from '../contexts/useProcessing';
 
 export function ProcessingModal() {
   const { isProcessing, processingMessage, progress, cancelProcessing } = useProcessing();

@@ -1,16 +1,5 @@
-import React, { createContext, useContext, useState, useRef } from 'react';
-
-interface ProcessingContextType {
-  isProcessing: boolean;
-  processingMessage: string;
-  progress: number;
-  startProcessing: (message?: string) => void;
-  stopProcessing: () => void;
-  updateProgress: (progress: number, message?: string) => void;
-  cancelProcessing: () => void;
-}
-
-const ProcessingContext = createContext<ProcessingContextType | undefined>(undefined);
+import React, { useState, useRef } from 'react';
+import { ProcessingContext } from './processingStore';
 
 export function ProcessingProvider({ children }: { children: React.ReactNode }) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -46,10 +35,6 @@ export function ProcessingProvider({ children }: { children: React.ReactNode }) 
     stopProcessing();
   };
 
-  const getAbortSignal = () => {
-    return abortControllerRef.current?.signal;
-  };
-
   return (
     <ProcessingContext.Provider value={{
       isProcessing,
@@ -65,11 +50,4 @@ export function ProcessingProvider({ children }: { children: React.ReactNode }) 
   );
 }
 
-export function useProcessing() {
-  const context = useContext(ProcessingContext);
-  if (context === undefined) {
-    throw new Error('useProcessing must be used within a ProcessingProvider');
-  }
-  return context;
-}
 

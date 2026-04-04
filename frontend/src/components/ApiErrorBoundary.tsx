@@ -7,10 +7,10 @@ interface ApiErrorBoundaryState {
 }
 
 export class ApiErrorBoundary extends React.Component<
-  React.PropsWithChildren<{}>,
+  React.PropsWithChildren,
   ApiErrorBoundaryState
 > {
-  constructor(props: React.PropsWithChildren<{}>) {
+  constructor(props: React.PropsWithChildren) {
     super(props);
     this.state = { hasError: false };
   }
