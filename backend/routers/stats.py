@@ -4,8 +4,7 @@ Stats Router — combines results from trainer JSON files + word_seg evaluation.
 
 import os
 import json
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
-from utils.database import require_auth
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 
 router = APIRouter()
 
@@ -38,7 +37,7 @@ def _run_evaluation():
 
 
 @router.get("")
-def get_stats(_user: dict = Depends(require_auth)):
+def get_stats():
     mtu  = _load_json("mtu_results.json")
     syl  = _load_json("syllable_results.json")
     word = _load_json("word_seg_results.json")
@@ -94,7 +93,7 @@ def get_stats(_user: dict = Depends(require_auth)):
 
 
 @router.post("/evaluate")
-def trigger_evaluation(background_tasks: BackgroundTasks, _user: dict = Depends(require_auth)):
+def trigger_evaluation(background_tasks: BackgroundTasks):
     """Trigger word segmentation evaluation in the background."""
     global _eval_running
     if _eval_running:

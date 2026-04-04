@@ -1,37 +1,10 @@
-import asyncio
-from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import auth, users, roles, nlp, stats
-from utils.database import DB_PATH
-
-import sqlite3
-from datetime import datetime
-
-SESSION_CLEANUP_INTERVAL = 30 * 60  # 30 minutes
+from routers import nlp, stats
 
 
-async def _session_cleanup_loop():
-    while True:
-        await asyncio.sleep(SESSION_CLEANUP_INTERVAL)
-        with sqlite3.connect(DB_PATH) as conn:
-            conn.execute(
-                "DELETE FROM sessions WHERE expires_at <= ?",
-                (datetime.utcnow().isoformat(),),
-            )
-            conn.commit()
-        print("[session cleanup] Expired sessions purged.")
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    task = asyncio.create_task(_session_cleanup_loop())
-    yield
-    task.cancel()
-
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -68,8 +41,5 @@ async def add_security_headers(request: Request, call_next):
 async def api_info():
     return {"status": "running", "message": "Thai Text Segmenter API"}
 
-app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
-app.include_router(users.router, prefix="/api/users", tags=["users"])
-app.include_router(roles.router, prefix="/api/roles", tags=["roles"])
 app.include_router(nlp.router, prefix="/api/nlp", tags=["nlp"])
 app.include_router(stats.router, prefix="/api/statistics", tags=["stats"])

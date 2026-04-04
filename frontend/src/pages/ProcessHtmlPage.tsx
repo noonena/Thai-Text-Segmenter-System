@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FilePlus, FileCode, Play, Trash2, Loader2 } from "lucide-react";
-import { saveToHistory } from "./HistoryPage";
-import { useProcessing } from "../contexts/ProcessingContext";
+import { saveToHistory } from "./historyStorage";
+import { useProcessing } from "../contexts/useProcessing";
 
 /* =======================
    Types
@@ -73,7 +73,6 @@ export default function ProcessHtmlPage({ settings }: Props) {
       const response = await fetch(`${API_BASE}/nlp/process-html`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ html: rawHtml }),
       });
 
@@ -87,7 +86,7 @@ export default function ProcessHtmlPage({ settings }: Props) {
 
       updateProgress(75, "Processing results...");
 
-      const result = data.data as any;
+      const result = data.data as { wrapped_html?: string; processed_html?: string; segment_count?: number };
 
       // Count segments (estimate from wrapped HTML)
       const segmentCount = result.segment_count || 
@@ -109,7 +108,6 @@ export default function ProcessHtmlPage({ settings }: Props) {
       fetch(`${API_BASE}/nlp/export-training`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({
           original_text: rawHtml,
           segmented_words: [], // HTML processing doesn't return word segments
