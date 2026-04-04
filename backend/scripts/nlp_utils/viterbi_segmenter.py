@@ -16,7 +16,7 @@ TRAINERS_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..', 'trainers'))
 sys.path.insert(0, TRAINERS_DIR)
 sys.path.insert(0, os.path.join(SCRIPT_DIR, 'features'))
 
-from lst20_dictionary_builder import LST20Dictionary
+from lst20_dictionary_builder import LST20Dictionary # type: ignore
 from features.char_utils import is_number, is_valid_thai_word
 
 

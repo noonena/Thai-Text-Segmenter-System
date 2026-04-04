@@ -1,0 +1,18 @@
+[project]
+name = "tss-backend"
+version = "0.1.0"
+description = "Backend for Thai Segmentation System"
+readme = "./README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "bcrypt>=4.0.0",
+    "beautifulsoup4>=4.12.0",
+    "fastapi==0.104.0",
+    "lxml>=4.9.0",
+    "numpy>=1.21.0",
+    "pandas>=1.3.0",
+    "python-dotenv>=0.19.0",
+    "scikit-learn>=1.0.0",
+    "sklearn-crfsuite==0.3.6",
+    "uvicorn==0.24.0",
+]
