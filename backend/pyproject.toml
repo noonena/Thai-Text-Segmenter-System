@@ -5,7 +5,6 @@ description = "Backend for Thai Segmentation System"
 readme = "./README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "bcrypt>=4.0.0",
     "beautifulsoup4>=4.12.0",
     "fastapi==0.104.0",
     "lxml>=4.9.0",

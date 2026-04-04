@@ -1,52 +1,6 @@
 import { Search, Download } from "lucide-react";
-import { useState, useEffect } from "react";
-
-type HistoryItem = {
-  id: string;
-  filename: string;
-  createdAt: string;   // e.g. "20 Nov 2024, 14:30"
-  segments: number;    // e.g. 187
-  output: string;      // processed HTML as plain text
-};
-
-// Storage utilities
-const STORAGE_KEY = "thai-text-history";
-
-const getHistory = (): HistoryItem[] => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-};
-
-const saveToHistory = (item: Omit<HistoryItem, "id" | "createdAt">) => {
-  const history = getHistory();
-  const newItem: HistoryItem = {
-    ...item,
-    id: Date.now().toString(),
-    createdAt: new Date().toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    }).replace(/,/g, "")
-  };
-  
-  history.unshift(newItem); // Add to beginning
-  if (history.length > 50) history.pop(); // Keep max 50 items
-  
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-  return newItem;
-};
-
-const removeFromHistory = (id: string) => {
-  const history = getHistory();
-  const filtered = history.filter(item => item.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
-};
+import { useMemo, useState } from "react";
+import { getHistory, removeFromHistory, type HistoryItem } from "./historyStorage";
 
 // Card component
 function HistoryCard({ item, onDelete }: { item: HistoryItem; onDelete: (id: string) => void }) {
@@ -107,20 +61,17 @@ function HistoryCard({ item, onDelete }: { item: HistoryItem; onDelete: (id: str
 }
 
 export default function HistoryPage() {
-  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>(() => getHistory());
   const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    setHistory(getHistory());
-  }, []);
 
   const handleDelete = (id: string) => {
     removeFromHistory(id);
     setHistory(prev => prev.filter(item => item.id !== id));
   };
 
-  const filteredHistory = history.filter(item =>
-    item.filename.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredHistory = useMemo(
+    () => history.filter((item) => item.filename.toLowerCase().includes(searchQuery.toLowerCase())),
+    [history, searchQuery],
   );
 
   return (
@@ -154,6 +105,3 @@ export default function HistoryPage() {
     </div>
   );
 }
-
-// Export utilities for other components
-export { saveToHistory, getHistory, removeFromHistory };
