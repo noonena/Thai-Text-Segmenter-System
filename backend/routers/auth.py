@@ -46,7 +46,7 @@ def login_user(data: UserLogin, response: Response):
                 value=token,
                 httponly=True,
                 samesite="lax",
-                max_age=1800,
+                max_age=3600,
                 secure=False,
             )
 

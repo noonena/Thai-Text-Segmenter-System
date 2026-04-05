@@ -132,7 +132,7 @@ export default function SettingPage({ onClose, onApply }: Props) {
                             Preview
                         </label>
                         <pre className="bg-black text-gray-100 rounded-lg p-4 text-xs leading-relaxed h-[180px] overflow-auto">
-                            {['ผม', 'ชอบ', 'กิน', 'ข้าวผัด', 'อร่อยๆ'].map((word, i) =>
+                            {['ผม', 'ชอบ', 'กิน', 'ข้าวผัด', 'อร่อย'].map((word, i) =>
                                 `${i > 0 ? '<wbr>' : ''}<${tag}${cssClass ? ` class="${cssClass}"` : ''}>${word}</${tag}>`
                             ).join('\n')}
                         </pre>

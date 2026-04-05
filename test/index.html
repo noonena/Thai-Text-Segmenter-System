@@ -334,6 +334,25 @@
     .toolbar { flex-direction: column; align-items: stretch; }
     .toolbar-sep { display: none; }
   }
+  .nowrap {
+    white-space: nowrap;
+  }
+
+  .case-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: inherit;
+    flex-shrink: 0;
+  }
 </style>
 </head>
 <body>
@@ -361,17 +380,10 @@
 <div class="comparison" id="comp-1">
   <div class="panel broken">
     <div class="panel-header">
-      <div class="panel-header-left"><span class="dot"></span> ❌ ก่อนทำ Wrapping (B)</div>
+      <div class="panel-header-left"><span class="dot"></span><span class="case-num">1</span> ❌ ก่อนทำ Wrapping (B)</div>
     </div>
     <div class="panel-body">
-      <div class="text-box resizable" id="box-broken-1"><p>การพัฒนาซอฟต์แวร์เฉพาะทางที่บูรณาการองค์ความรู้ด้านปัญญาประดิษฐ์ การประมวลผลภาษาธรรมชาติ การเรียนรู้ของเครื่อง การรู้จำรูปแบบ และการวิเคราะห์ข้อมูลขนาดใหญ่ มีความสำคัญเชิงยุทธศาสตร์อย่างยิ่งต่อการยกระดับขีดความสามารถในการแข่งขันของประเทศไทยในบริบทของเศรษฐกิจดิจิทัลที่มีความผันผวนและเปลี่ยนแปลงอย่างรวดเร็ว องค์กรทั้งภาครัฐและภาคเอกชนจำเป็นต้องปรับตัวต่อสภาพแวดล้อมที่เต็มไปด้วยข้อมูลปริมาณมหาศาล ความคาดหวังของผู้ใช้งานที่สูงขึ้น และแรงกดดันด้านประสิทธิภาพในการดำเนินงาน ซึ่งเทคโนโลยีสมัยใหม่สามารถเข้ามามีบทบาทสำคัญในการเพิ่มความแม่นยำ ลดความซ้ำซ้อนของกระบวนการทำงาน สนับสนุนการตัดสินใจเชิงกลยุทธ์ และสร้างความได้เปรียบทางการแข่งขันได้อย่างเป็นรูปธรรม</p>
-      <p>ในสภาวะที่องค์กรต้องเผชิญกับข้อจำกัดด้านทรัพยากร เวลา บุคลากร และงบประมาณ การนำระบบอัตโนมัติอัจฉริยะเข้ามาเสริมสร้างประสิทธิผลเชิงปฏิบัติการจึงมิใช่เพียงทางเลือก แต่เป็นเงื่อนไขสำคัญของการอยู่รอดในระยะยาว ซอฟต์แวร์ที่สามารถประมวลผลข้อมูลจำนวนมากแบบกึ่งเรียลไทม์ วิเคราะห์พฤติกรรมของผู้ใช้งาน คาดการณ์แนวโน้มทางธุรกิจ และนำเสนอข้อเสนอแนะที่สอดคล้องกับบริบทเฉพาะของแต่ละสถานการณ์ จะช่วยให้องค์กรสามารถจัดสรรทรัพยากรได้อย่างเหมาะสม ลดความสูญเปล่าจากกระบวนการที่ไม่มีประสิทธิภาพ และยกระดับคุณภาพของการให้บริการได้ในระดับที่สูงขึ้นอย่างต่อเนื่อง</p>
-      <p>
-        ความท้าทายที่สำคัญของการออกแบบระบบซอฟต์แวร์ในปัจจุบันมิได้จำกัดอยู่เพียงความสามารถด้านการประมวลผลหรือความถูกต้องของผลลัพธ์เท่านั้น หากแต่ยังครอบคลุมถึงประเด็นด้านความสามารถในการใช้งาน ความยืดหยุ่นในการขยายระบบ ความมั่นคงปลอดภัยของข้อมูล และความเหมาะสมของการนำเสนอข้อมูลผ่านส่วนติดต่อผู้ใช้ในอุปกรณ์ที่มีขนาดหน้าจอแตกต่างกันอย่างมาก ด้วยเหตุนี้ การจัดการข้อความภาษาไทยที่มีความซับซ้อนด้านการเว้นวรรค การตัดคำ และการขึ้นบรรทัดใหม่จึงเป็นองค์ประกอบที่มีนัยสำคัญอย่างยิ่งต่อประสบการณ์ของผู้ใช้งานและภาพลักษณ์โดยรวมของระบบ
-      </p>
-      <p>
-        เมื่อพิจารณาในเชิงวิศวกรรมซอฟต์แวร์ การปรับปรุงระบบให้รองรับข้อความที่มีความยาวมาก คำศัพท์เฉพาะทางที่มีหลายพยางค์ และเนื้อหาที่ผสมผสานระหว่างภาษาไทยกับภาษาอังกฤษ จำเป็นต้องอาศัยทั้งกลไกการจัดวางโครงสร้างหน้า การกำหนดความกว้างขององค์ประกอบ การควบคุมการตัดบรรทัด และการบริหารจัดการ overflow อย่างรอบคอบ หากขาดการออกแบบที่เหมาะสม ผู้ใช้งานอาจพบปัญหาข้อความล้นกรอบ บรรทัดแตกในตำแหน่งที่อ่านยาก ปุ่มหรือการ์ดมีความสูงผิดปกติ ตารางแสดงผลผิดสัดส่วน หรือแม้กระทั่งความล้มเหลวของ layout โดยรวมในอุปกรณ์พกพาที่มีพื้นที่แสดงผลจำกัด
-      </p></div>
+      <div class="text-box resizable" id="box-broken-1">เขากินกล้วยแขกแล้วบอกว่าเริ่ดเลยแหละ สุดจะปังปุริเย่ ใครจะเทียบเท่าได้ละออเจ้า</div>
       <div class="counter-row">
         <button class="count-btn problem" onclick="addCount('B',1,1)">+ ปัญหา</button>
         <button class="count-btn undo" onclick="addCount('B',1,-1)">− undo</button>
@@ -384,10 +396,10 @@
 
   <div class="panel fixed">
     <div class="panel-header">
-      <div class="panel-header-left"><span class="dot"></span> ✅ หลังทำ Wrapping (A)</div>
+      <div class="panel-header-left"><span class="dot"></span><span class="case-num">1</span> ✅ หลังทำ Wrapping (A)</div>
     </div>
     <div class="panel-body">
-      <div class="text-box resizable seg-container show-segments" id="box-fixed-1"><p>การพัฒนาซอฟต์แวร์เฉพาะทางที่บูรณาการองค์ความรู้ด้านปัญญาประดิษฐ์ การประมวลผลภาษาธรรมชาติ การเรียนรู้ของเครื่อง การรู้จำรูปแบบ และการวิเคราะห์ข้อมูลขนาดใหญ่ มีความสำคัญเชิงยุทธศาสตร์อย่างยิ่งต่อการยกระดับขีดความสามารถในการแข่งขันของประเทศไทยในบริบทของเศรษฐกิจดิจิทัลที่มีความผันผวนและเปลี่ยนแปลงอย่างรวดเร็ว องค์กรทั้งภาครัฐและภาคเอกชนจำเป็นต้องปรับตัวต่อสภาพแวดล้อมที่เต็มไปด้วยข้อมูลปริมาณมหาศาล ความคาดหวังของผู้ใช้งานที่สูงขึ้น และแรงกดดันด้านประสิทธิภาพในการดำเนินงาน ซึ่งเทคโนโลยีสมัยใหม่สามารถเข้ามามีบทบาทสำคัญในการเพิ่มความแม่นยำ ลดความซ้ำซ้อนของกระบวนการทำงาน สนับสนุนการตัดสินใจเชิงกลยุทธ์ และสร้างความได้เปรียบทางการแข่งขันได้อย่างเป็นรูปธรรม</p><p>ในสภาวะที่องค์กรต้องเผชิญกับข้อจำกัดด้านทรัพยากร เวลา บุคลากร และงบประมาณ การนำระบบอัตโนมัติอัจฉริยะเข้ามาเสริมสร้างประสิทธิผลเชิงปฏิบัติการจึงมิใช่เพียงทางเลือก แต่เป็นเงื่อนไขสำคัญของการอยู่รอดในระยะยาว ซอฟต์แวร์ที่สามารถประมวลผลข้อมูลจำนวนมากแบบกึ่งเรียลไทม์ วิเคราะห์พฤติกรรมของผู้ใช้งาน คาดการณ์แนวโน้มทางธุรกิจ และนำเสนอข้อเสนอแนะที่สอดคล้องกับบริบทเฉพาะของแต่ละสถานการณ์ จะช่วยให้องค์กรสามารถจัดสรรทรัพยากรได้อย่างเหมาะสม ลดความสูญเปล่าจากกระบวนการที่ไม่มีประสิทธิภาพ และยกระดับคุณภาพของการให้บริการได้ในระดับที่สูงขึ้นอย่างต่อเนื่อง</p><p>ความท้าทายที่สำคัญของการออกแบบระบบซอฟต์แวร์ในปัจจุบันมิได้จำกัดอยู่เพียงความสามารถด้านการประมวลผลหรือความถูกต้องของผลลัพธ์เท่านั้น หากแต่ยังครอบคลุมถึงประเด็นด้านความสามารถในการใช้งาน ความยืดหยุ่นในการขยายระบบ ความมั่นคงปลอดภัยของข้อมูล และความเหมาะสมของการนำเสนอข้อมูลผ่านส่วนติดต่อผู้ใช้ในอุปกรณ์ที่มีขนาดหน้าจอแตกต่างกันอย่างมาก ด้วยเหตุนี้ การจัดการข้อความภาษาไทยที่มีความซับซ้อนด้านการเว้นวรรค การตัดคำ และการขึ้นบรรทัดใหม่จึงเป็นองค์ประกอบที่มีนัยสำคัญอย่างยิ่งต่อประสบการณ์ของผู้ใช้งานและภาพลักษณ์โดยรวมของระบบ</p><p>เมื่อพิจารณาในเชิงวิศวกรรมซอฟต์แวร์ การปรับปรุงระบบให้รองรับข้อความที่มีความยาวมาก คำศัพท์เฉพาะทางที่มีหลายพยางค์ และเนื้อหาที่ผสมผสานระหว่างภาษาไทยกับภาษาอังกฤษ จำเป็นต้องอาศัยทั้งกลไกการจัดวางโครงสร้างหน้า การกำหนดความกว้างขององค์ประกอบ การควบคุมการตัดบรรทัด และการบริหารจัดการ overflow อย่างรอบคอบ หากขาดการออกแบบที่เหมาะสม ผู้ใช้งานอาจพบปัญหาข้อความล้นกรอบ บรรทัดแตกในตำแหน่งที่อ่านยาก ปุ่มหรือการ์ดมีความสูงผิดปกติ ตารางแสดงผลผิดสัดส่วน หรือแม้กระทั่งความล้มเหลวของ layout โดยรวมในอุปกรณ์พกพาที่มีพื้นที่แสดงผลจำกัด</p></div>
+      <div class="text-box resizable seg-container show-segments" id="box-fixed-1">เขากินกล้วยแขกแล้วบอกว่าเริ่ดเลยแหละ สุดจะปังปุริเย่ ใครจะเทียบเท่าได้ละออเจ้า</div>
       <div class="counter-row">
         <button class="count-btn problem" onclick="addCount('A',1,1)" style="background:var(--green-bg);border-color:var(--green-border);color:var(--green);">+ ปัญหา</button>
         <button class="count-btn undo" onclick="addCount('A',1,-1)">− undo</button>
@@ -398,54 +410,61 @@
     </div>
   </div>
 </div>
-
 <!-- ═══════════════════════════════════════════════ -->
 <!-- COMPARISON 2                                    -->
 <!-- ═══════════════════════════════════════════════ -->
 <div class="comparison" id="comp-2">
   <div class="panel broken">
     <div class="panel-header">
-      <div class="panel-header-left"><span class="dot"></span> ❌ ก่อนทำ Wrapping (B)</div>
+      <div class="panel-header-left"><span class="dot"></span><span class="case-num">2</span> ❌ ก่อนทำ Wrapping (B)</div>
     </div>
     <div class="panel-body">
-      <div class="text-box resizable" id="box-broken-2">สวัสดีครับผมชื่อสมชายเป็นนักพัฒนาซอฟต์แวร์ที่ปฏิบัติงานอยู่ในกรุงเทพมหานครและมุ่งเน้นการพัฒนาระบบสารสนเทศอัจฉริยะที่สามารถรองรับการวิเคราะห์ข้อมูลเชิงคาดการณ์ การประมวลผลภาษาธรรมชาติ การเรียนรู้ของเครื่อง และการสนับสนุนการตัดสินใจเชิงกลยุทธ์ในระดับองค์กร ข้อมูลที่ครอบคลุมครบถ้วนเชิงพหุมิติ มีความถูกต้องเชิงโครงสร้าง สามารถตรวจสอบย้อนกลับได้ และสอดคล้องกับบริบทการใช้งานจริง จะช่วยให้กระบวนการบริหารจัดการทรัพยากร การวางแผนเชิงยุทธศาสตร์ และการเพิ่มประสิทธิผลของการดำเนินงานสามารถดำเนินไปได้อย่างเป็นระบบ โปร่งใส และมีประสิทธิภาพสูงสุด
-    </div>
+      <div class="text-box resizable" id="box-broken-1"><p>การพัฒนาซอฟต์แวร์เฉพาะทางที่บูรณาการองค์ความรู้ด้านปัญญาประดิษฐ์ การประมวลผลภาษาธรรมชาติ การเรียนรู้ของเครื่อง การรู้จำรูปแบบ และการวิเคราะห์ข้อมูลขนาดใหญ่ มีความสำคัญเชิงยุทธศาสตร์อย่างยิ่งต่อการยกระดับขีดความสามารถในการแข่งขันของประเทศไทยในบริบทของเศรษฐกิจดิจิทัลที่มีความผันผวนและเปลี่ยนแปลงอย่างรวดเร็ว องค์กรทั้งภาครัฐและภาคเอกชนจำเป็นต้องปรับตัวต่อสภาพแวดล้อมที่เต็มไปด้วยข้อมูลปริมาณมหาศาล ความคาดหวังของผู้ใช้งานที่สูงขึ้น และแรงกดดันด้านประสิทธิภาพในการดำเนินงาน ซึ่งเทคโนโลยีสมัยใหม่สามารถเข้ามามีบทบาทสำคัญในการเพิ่มความแม่นยำ ลดความซ้ำซ้อนของกระบวนการทำงาน สนับสนุนการตัดสินใจเชิงกลยุทธ์ และสร้างความได้เปรียบทางการแข่งขันได้อย่างเป็นรูปธรรม</p>
+      <p>ในสภาวะที่องค์กรต้องเผชิญกับข้อจำกัดด้านทรัพยากร เวลา บุคลากร และงบประมาณ การนำระบบอัตโนมัติอัจฉริยะเข้ามาเสริมสร้างประสิทธิผลเชิงปฏิบัติการจึงมิใช่เพียงทางเลือก แต่เป็นเงื่อนไขสำคัญของการอยู่รอดในระยะยาว ซอฟต์แวร์ที่สามารถประมวลผลข้อมูลจำนวนมากแบบกึ่งเรียลไทม์ วิเคราะห์พฤติกรรมของผู้ใช้งาน คาดการณ์แนวโน้มทางธุรกิจ และนำเสนอข้อเสนอแนะที่สอดคล้องกับบริบทเฉพาะของแต่ละสถานการณ์ จะช่วยให้องค์กรสามารถจัดสรรทรัพยากรได้อย่างเหมาะสม ลดความสูญเปล่าจากกระบวนการที่ไม่มีประสิทธิภาพ และยกระดับคุณภาพของการให้บริการได้ในระดับที่สูงขึ้นอย่างต่อเนื่อง</p>
+      <p>
+        ความท้าทายที่สำคัญของการออกแบบระบบซอฟต์แวร์ในปัจจุบันมิได้จำกัดอยู่เพียงความสามารถด้านการประมวลผลหรือความถูกต้องของผลลัพธ์เท่านั้น หากแต่ยังครอบคลุมถึงประเด็นด้านความสามารถในการใช้งาน ความยืดหยุ่นในการขยายระบบ ความมั่นคงปลอดภัยของข้อมูล และความเหมาะสมของการนำเสนอข้อมูลผ่านส่วนติดต่อผู้ใช้ในอุปกรณ์ที่มีขนาดหน้าจอแตกต่างกันอย่างมาก ด้วยเหตุนี้ การจัดการข้อความภาษาไทยที่มีความซับซ้อนด้านการเว้นวรรค การตัดคำ และการขึ้นบรรทัดใหม่จึงเป็นองค์ประกอบที่มีนัยสำคัญอย่างยิ่งต่อประสบการณ์ของผู้ใช้งานและภาพลักษณ์โดยรวมของระบบ
+      </p>
+      <p>
+        เมื่อพิจารณาในเชิงวิศวกรรมซอฟต์แวร์ การปรับปรุงระบบให้รองรับข้อความที่มีความยาวมาก คำศัพท์เฉพาะทางที่มีหลายพยางค์ และเนื้อหาที่ผสมผสานระหว่างภาษาไทยกับภาษาอังกฤษ จำเป็นต้องอาศัยทั้งกลไกการจัดวางโครงสร้างหน้า การกำหนดความกว้างขององค์ประกอบ การควบคุมการตัดบรรทัด และการบริหารจัดการ overflow อย่างรอบคอบ หากขาดการออกแบบที่เหมาะสม ผู้ใช้งานอาจพบปัญหาข้อความล้นกรอบ บรรทัดแตกในตำแหน่งที่อ่านยาก ปุ่มหรือการ์ดมีความสูงผิดปกติ ตารางแสดงผลผิดสัดส่วน หรือแม้กระทั่งความล้มเหลวของ layout โดยรวมในอุปกรณ์พกพาที่มีพื้นที่แสดงผลจำกัด
+      </p></div>
       <div class="counter-row">
         <button class="count-btn problem" onclick="addCount('B',2,1)">+ ปัญหา</button>
         <button class="count-btn undo" onclick="addCount('B',2,-1)">− undo</button>
         <span class="count-display" id="count-B-2">0</span>
         <button class="count-btn reset" onclick="resetCount('B',2)">reset</button>
       </div>
+      <div class="img-placeholder">📷 Image Slot <!-- <img src=""> --></div>
     </div>
   </div>
 
   <div class="panel fixed">
     <div class="panel-header">
-      <div class="panel-header-left"><span class="dot"></span> ✅ หลังทำ Wrapping (A)</div>
+      <div class="panel-header-left"><span class="dot"></span><span class="case-num">2</span> ✅ หลังทำ Wrapping (A)</div>
     </div>
     <div class="panel-body">
-      <div class="text-box resizable seg-container show-segments" id="box-fixed-2">สวัสดีครับผมชื่อสมชายเป็นนักพัฒนาซอฟต์แวร์ที่ปฏิบัติงานอยู่ในกรุงเทพมหานครและมุ่งเน้นการพัฒนาระบบสารสนเทศอัจฉริยะที่สามารถรองรับการวิเคราะห์ข้อมูลเชิงคาดการณ์ การประมวลผลภาษาธรรมชาติ การเรียนรู้ของเครื่อง และการสนับสนุนการตัดสินใจเชิงกลยุทธ์ในระดับองค์กร ข้อมูลที่ครอบคลุมครบถ้วนเชิงพหุมิติ มีความถูกต้องเชิงโครงสร้าง สามารถตรวจสอบย้อนกลับได้ และสอดคล้องกับบริบทการใช้งานจริง จะช่วยให้กระบวนการบริหารจัดการทรัพยากร การวางแผนเชิงยุทธศาสตร์ และการเพิ่มประสิทธิผลของการดำเนินงานสามารถดำเนินไปได้อย่างเป็นระบบ โปร่งใส และมีประสิทธิภาพสูงสุด</div>
+      <div class="text-box resizable seg-container show-segments" id="box-fixed-1"><p><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">พัฒนา</span><wbr><span class="nowrap">ซอฟต์แวร์</span><wbr><span class="nowrap">เฉพาะ</span><wbr><span class="nowrap">ทาง</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">บูรณาการ</span><wbr><span class="nowrap">องค์</span><wbr><span class="nowrap">ความรู้</span><wbr><span class="nowrap">ด้าน</span><wbr><span class="nowrap">ปัญญา</span><wbr><span class="nowrap">ประดิษฐ์</span> <wbr><span class="nowrap">การ</span><wbr><span class="nowrap">ประมวล</span><wbr><span class="nowrap">ผล</span><wbr><span class="nowrap">ภาษา</span><wbr><span class="nowrap">ธรรมชาติ</span> <wbr><span class="nowrap">การ</span><wbr><span class="nowrap">เรียนรู้</span><wbr><span class="nowrap">ของ</span><wbr><span class="nowrap">เครื่อง</span> <wbr><span class="nowrap">การ</span><wbr><span class="nowrap">รู้</span><wbr><span class="nowrap">จำ</span><wbr><span class="nowrap">รูปแบบ</span> <wbr><span class="nowrap">และการ</span><wbr><span class="nowrap">วิเคราะห์</span><wbr><span class="nowrap">ข้อมูล</span><wbr><span class="nowrap">ขนาด</span><wbr><span class="nowrap">ใหญ่</span> <wbr><span class="nowrap">มี</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">สำคัญ</span><wbr><span class="nowrap">เชิง</span><wbr><span class="nowrap">ยุทธ</span><wbr><span class="nowrap">ศาสตร์</span><wbr><span class="nowrap">อย่าง</span><wbr><span class="nowrap">ยิ่ง</span><wbr><span class="nowrap">ต่อ</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">ยกระดับ</span><wbr><span class="nowrap">ขีด</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">สามารถ</span><wbr><span class="nowrap">ใน</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">แข่งขัน</span><wbr><span class="nowrap">ของ</span><wbr><span class="nowrap">ประเทศไทย</span><wbr><span class="nowrap">ใน</span><wbr><span class="nowrap">บริบท</span><wbr><span class="nowrap">ของ</span><wbr><span class="nowrap">เศรษฐกิจ</span><wbr><span class="nowrap">ดิจิทัล</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">มี</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">ผันผวน</span><wbr><span class="nowrap">และ</span><wbr><span class="nowrap">เปลี่ยนแปลง</span><wbr><span class="nowrap">อย่าง</span><wbr><span class="nowrap">รวดเร็ว</span> <wbr><span class="nowrap">องค์กร</span><wbr><span class="nowrap">ทั้ง</span><wbr><span class="nowrap">ภาค</span><wbr><span class="nowrap">รัฐ</span><wbr><span class="nowrap">และ</span><wbr><span class="nowrap">ภาค</span><wbr><span class="nowrap">เอกชน</span><wbr><span class="nowrap">จำเป็น</span><wbr><span class="nowrap">ต้อง</span><wbr><span class="nowrap">ปรับตัว</span><wbr><span class="nowrap">ต่อ</span><wbr><span class="nowrap">สภาพ</span><wbr><span class="nowrap">แวดล้อม</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">เต็ม</span><wbr><span class="nowrap">ไป</span><wbr><span class="nowrap">ด้วย</span><wbr><span class="nowrap">ข้อมูล</span><wbr><span class="nowrap">ปริมาณ</span><wbr><span class="nowrap">มหาศาล</span> <wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">คาดหวัง</span><wbr><span class="nowrap">ของ</span><wbr><span class="nowrap">ผู้</span><wbr><span class="nowrap">ใช้</span><wbr><span class="nowrap">งาน</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">สูง</span><wbr><span class="nowrap">ขึ้น</span> <wbr><span class="nowrap">และ</span><wbr><span class="nowrap">แรง</span><wbr><span class="nowrap">กดดัน</span><wbr><span class="nowrap">ด้าน</span><wbr><span class="nowrap">ประสิทธิ</span><wbr><span class="nowrap">ภาพ</span><wbr><span class="nowrap">ใน</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">ดำเนินงาน</span> <wbr><span class="nowrap">ซึ่ง</span><wbr><span class="nowrap">เทคโนโลยี</span><wbr><span class="nowrap">สมัย</span><wbr><span class="nowrap">ใหม่</span><wbr><span class="nowrap">สามารถ</span><wbr><span class="nowrap">เข้า</span><wbr><span class="nowrap">มา</span><wbr><span class="nowrap">มี</span><wbr><span class="nowrap">บทบาท</span><wbr><span class="nowrap">สำคัญ</span><wbr><span class="nowrap">ใน</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">เพิ่ม</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">แม่นยำ</span> <wbr><span class="nowrap">ลด</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">ซ้ำซ้อน</span><wbr><span class="nowrap">ของ</span><wbr><span class="nowrap">กระบวนการ</span><wbr><span class="nowrap">ทำงาน</span> <wbr><span class="nowrap">สนับสนุน</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">ตัดสินใจ</span><wbr><span class="nowrap">เชิง</span><wbr><span class="nowrap">กลยุทธ์</span> <wbr><span class="nowrap">และ</span><wbr><span class="nowrap">สร้าง</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">ได้เปรียบ</span><wbr><span class="nowrap">ทางการ</span><wbr><span class="nowrap">แข่งขัน</span><wbr><span class="nowrap">ได้</span><wbr><span class="nowrap">อย่าง</span><wbr><span class="nowrap">เป็น</span><wbr><span class="nowrap">รูปธรรม</span></p><p><wbr><span class="nowrap">ใน</span><wbr><span class="nowrap">สภาวะ</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">องค์กร</span><wbr><span class="nowrap">ต้อง</span><wbr><span class="nowrap">เผชิญ</span><wbr><span class="nowrap">กับ</span><wbr><span class="nowrap">ข้อ</span><wbr><span class="nowrap">จำกัด</span><wbr><span class="nowrap">ด้าน</span><wbr><span class="nowrap">ทรัพยากร</span> <wbr><span class="nowrap">เวลา</span> <wbr><span class="nowrap">บุคลากร</span> <wbr><span class="nowrap">และ</span><wbr><span class="nowrap">งบประมาณ</span> <wbr><span class="nowrap">การ</span><wbr><span class="nowrap">นำ</span><wbr><span class="nowrap">ระบบ</span><wbr><span class="nowrap">อัตโนมัติ</span><wbr><span class="nowrap">อัจฉริยะ</span><wbr><span class="nowrap">เข้า</span><wbr><span class="nowrap">มา</span><wbr><span class="nowrap">เสริมสร้าง</span><wbr><span class="nowrap">ประสิทธิผล</span><wbr><span class="nowrap">เชิง</span><wbr><span class="nowrap">ปฏิบัติ</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">จึง</span><wbr><span class="nowrap">มิ</span><wbr><span class="nowrap">ใช่</span><wbr><span class="nowrap">เพียง</span><wbr><span class="nowrap">ทาง</span><wbr><span class="nowrap">เลือก</span> <wbr><span class="nowrap">แต่</span><wbr><span class="nowrap">เป็น</span><wbr><span class="nowrap">เงื่อนไข</span><wbr><span class="nowrap">สำคัญ</span><wbr><span class="nowrap">ของ</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">อยู่</span><wbr><span class="nowrap">รอด</span><wbr><span class="nowrap">ใน</span><wbr><span class="nowrap">ระยะ</span><wbr><span class="nowrap">ยาว</span> <wbr><span class="nowrap">ซอฟต์แวร์ที่</span><wbr><span class="nowrap">สามารถ</span><wbr><span class="nowrap">ประมวล</span><wbr><span class="nowrap">ผล</span><wbr><span class="nowrap">ข้อมูล</span><wbr><span class="nowrap">จำนวน</span><wbr><span class="nowrap">มาก</span><wbr><span class="nowrap">แบบกึ่ง</span><wbr><span class="nowrap">เรียล</span><wbr><span class="nowrap">ไทม์</span> <wbr><span class="nowrap">วิเคราะห์</span><wbr><span class="nowrap">พฤติกรรม</span><wbr><span class="nowrap">ของ</span><wbr><span class="nowrap">ผู้</span><wbr><span class="nowrap">ใช้</span><wbr><span class="nowrap">งาน</span> <wbr><span class="nowrap">คาดการณ์</span><wbr><span class="nowrap">แนวโน้ม</span><wbr><span class="nowrap">ทาง</span><wbr><span class="nowrap">ธุรกิจ</span> <wbr><span class="nowrap">และ</span><wbr><span class="nowrap">นำเสนอ</span><wbr><span class="nowrap">ข้อ</span><wbr><span class="nowrap">เสนอแนะ</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">สอดคล้อง</span><wbr><span class="nowrap">กับ</span><wbr><span class="nowrap">บริบท</span><wbr><span class="nowrap">เฉพาะ</span><wbr><span class="nowrap">ของ</span><wbr><span class="nowrap">แต่ละ</span><wbr><span class="nowrap">สถานการณ์</span> <wbr><span class="nowrap">จะ</span><wbr><span class="nowrap">ช่วย</span><wbr><span class="nowrap">ให้</span><wbr><span class="nowrap">องค์กร</span><wbr><span class="nowrap">สามารถ</span><wbr><span class="nowrap">จัดสรร</span><wbr><span class="nowrap">ทรัพยากร</span><wbr><span class="nowrap">ได้</span><wbr><span class="nowrap">อย่าง</span><wbr><span class="nowrap">เหมาะสม</span> <wbr><span class="nowrap">ลด</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">สูญเปล่า</span><wbr><span class="nowrap">จาก</span><wbr><span class="nowrap">กระบวนการ</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">ไม่</span><wbr><span class="nowrap">มี</span><wbr><span class="nowrap">ประสิทธิ</span><wbr><span class="nowrap">ภาพ</span> <wbr><span class="nowrap">และ</span><wbr><span class="nowrap">ยกระดับ</span><wbr><span class="nowrap">คุณภาพ</span><wbr><span class="nowrap">ของ</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">ให้</span><wbr><span class="nowrap">บริการ</span><wbr><span class="nowrap">ได้</span><wbr><span class="nowrap">ใน</span><wbr><span class="nowrap">ระดับ</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">สูง</span><wbr><span class="nowrap">ขึ้น</span><wbr><span class="nowrap">อย่าง</span><wbr><span class="nowrap">ต่อเนื่อง</span></p><p><wbr><span class="nowrap">เมื่อ</span><wbr><span class="nowrap">พิจารณา</span><wbr><span class="nowrap">ใน</span><wbr><span class="nowrap">เชิง</span><wbr><span class="nowrap">วิศว</span><wbr><span class="nowrap">กรรม</span><wbr><span class="nowrap">ซอฟต์แวร์</span> <wbr><span class="nowrap">การ</span><wbr><span class="nowrap">ปรับ</span><wbr><span class="nowrap">ปรุง</span><wbr><span class="nowrap">ระบบ</span><wbr><span class="nowrap">ให้</span><wbr><span class="nowrap">รองรับ</span><wbr><span class="nowrap">ข้อความ</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">มี</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">ยาว</span><wbr><span class="nowrap">มาก</span> <wbr><span class="nowrap">คำศัพท์</span><wbr><span class="nowrap">เฉพาะ</span><wbr><span class="nowrap">ทาง</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">มี</span><wbr><span class="nowrap">หลาย</span><wbr><span class="nowrap">พยางค์</span> <wbr><span class="nowrap">และ</span><wbr><span class="nowrap">เนื้อหา</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">ผสมผสาน</span><wbr><span class="nowrap">ระหว่าง</span><wbr><span class="nowrap">ภาษา</span><wbr><span class="nowrap">ไทย</span><wbr><span class="nowrap">กับ</span><wbr><span class="nowrap">ภาษา</span><wbr><span class="nowrap">อังกฤษ</span> <wbr><span class="nowrap">จำเป็น</span><wbr><span class="nowrap">ต้อง</span><wbr><span class="nowrap">อาศัย</span><wbr><span class="nowrap">ทั้ง</span><wbr><span class="nowrap">กลไก</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">จัด</span><wbr><span class="nowrap">วาง</span><wbr><span class="nowrap">โครงสร้าง</span><wbr><span class="nowrap">หน้า</span> <wbr><span class="nowrap">การ</span><wbr><span class="nowrap">กำหนด</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">กว้าง</span><wbr><span class="nowrap">ของ</span><wbr><span class="nowrap">องค์</span><wbr><span class="nowrap">ประกอบ</span> <wbr><span class="nowrap">การควบคุม</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">ตัด</span><wbr><span class="nowrap">บรรทัด</span> <wbr><span class="nowrap">และการ</span><wbr><span class="nowrap">บริหาร</span><wbr><span class="nowrap">จัดการ</span> overflow <wbr><span class="nowrap">อย่าง</span><wbr><span class="nowrap">รอบคอบ</span> <wbr><span class="nowrap">หาก</span><wbr><span class="nowrap">ขาด</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">ออกแบบ</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">เหมาะสม</span> <wbr><span class="nowrap">ผู้</span><wbr><span class="nowrap">ใช้</span><wbr><span class="nowrap">งาน</span><wbr><span class="nowrap">อาจ</span><wbr><span class="nowrap">พบ</span><wbr><span class="nowrap">ปัญหา</span><wbr><span class="nowrap">ข้อความ</span><wbr><span class="nowrap">ล้น</span><wbr><span class="nowrap">กรอบ</span> <wbr><span class="nowrap">บรรทัด</span><wbr><span class="nowrap">แตก</span><wbr><span class="nowrap">ใน</span><wbr><span class="nowrap">ตำแหน่ง</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">อ่าน</span><wbr><span class="nowrap">ยาก</span> <wbr><span class="nowrap">ปุ่มหรือ</span><wbr><span class="nowrap">การ์ด</span><wbr><span class="nowrap">มี</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">สูง</span><wbr><span class="nowrap">ผิดปกติ</span> <wbr><span class="nowrap">ตาราง</span><wbr><span class="nowrap">แสดง</span><wbr><span class="nowrap">ผล</span><wbr><span class="nowrap">ผิด</span><wbr><span class="nowrap">สัดส่วน</span> <wbr><span class="nowrap">หรือ</span><wbr><span class="nowrap">แม้กระทั่ง</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">ล้มเหลว</span><wbr><span class="nowrap">ของ</span> layout <wbr><span class="nowrap">โดย</span><wbr><span class="nowrap">รวม</span><wbr><span class="nowrap">ในอุป</span><wbr><span class="nowrap">กรณ์</span><wbr><span class="nowrap">พกพา</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">มี</span><wbr><span class="nowrap">พื้นที่</span><wbr><span class="nowrap">แสดง</span><wbr><span class="nowrap">ผล</span><wbr><span class="nowrap">จำกัด</span></p><p><wbr><span class="nowrap">เมื่อ</span><wbr><span class="nowrap">พิจารณา</span><wbr><span class="nowrap">ใน</span><wbr><span class="nowrap">เชิง</span><wbr><span class="nowrap">วิศว</span><wbr><span class="nowrap">กรรม</span><wbr><span class="nowrap">ซอฟต์แวร์</span> <wbr><span class="nowrap">การ</span><wbr><span class="nowrap">ปรับ</span><wbr><span class="nowrap">ปรุง</span><wbr><span class="nowrap">ระบบ</span><wbr><span class="nowrap">ให้</span><wbr><span class="nowrap">รองรับ</span><wbr><span class="nowrap">ข้อความ</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">มี</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">ยาว</span><wbr><span class="nowrap">มาก</span> <wbr><span class="nowrap">คำศัพท์</span><wbr><span class="nowrap">เฉพาะ</span><wbr><span class="nowrap">ทาง</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">มี</span><wbr><span class="nowrap">หลาย</span><wbr><span class="nowrap">พยางค์</span> <wbr><span class="nowrap">และ</span><wbr><span class="nowrap">เนื้อหา</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">ผสมผสาน</span><wbr><span class="nowrap">ระหว่าง</span><wbr><span class="nowrap">ภาษา</span><wbr><span class="nowrap">ไทย</span><wbr><span class="nowrap">กับ</span><wbr><span class="nowrap">ภาษา</span><wbr><span class="nowrap">อังกฤษ</span> <wbr><span class="nowrap">จำเป็น</span><wbr><span class="nowrap">ต้อง</span><wbr><span class="nowrap">อาศัย</span><wbr><span class="nowrap">ทั้ง</span><wbr><span class="nowrap">กลไก</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">จัด</span><wbr><span class="nowrap">วาง</span><wbr><span class="nowrap">โครงสร้าง</span><wbr><span class="nowrap">หน้า</span> <wbr><span class="nowrap">การ</span><wbr><span class="nowrap">กำหนด</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">กว้าง</span><wbr><span class="nowrap">ของ</span><wbr><span class="nowrap">องค์</span><wbr><span class="nowrap">ประกอบ</span> <wbr><span class="nowrap">การควบคุม</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">ตัด</span><wbr><span class="nowrap">บรรทัด</span> <wbr><span class="nowrap">และการ</span><wbr><span class="nowrap">บริหาร</span><wbr><span class="nowrap">จัดการ</span> overflow <wbr><span class="nowrap">อย่าง</span><wbr><span class="nowrap">รอบคอบ</span> <wbr><span class="nowrap">หาก</span><wbr><span class="nowrap">ขาด</span><wbr><span class="nowrap">การ</span><wbr><span class="nowrap">ออกแบบ</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">เหมาะสม</span> <wbr><span class="nowrap">ผู้</span><wbr><span class="nowrap">ใช้</span><wbr><span class="nowrap">งาน</span><wbr><span class="nowrap">อาจ</span><wbr><span class="nowrap">พบ</span><wbr><span class="nowrap">ปัญหา</span><wbr><span class="nowrap">ข้อความ</span><wbr><span class="nowrap">ล้น</span><wbr><span class="nowrap">กรอบ</span> <wbr><span class="nowrap">บรรทัด</span><wbr><span class="nowrap">แตก</span><wbr><span class="nowrap">ใน</span><wbr><span class="nowrap">ตำแหน่ง</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">อ่าน</span><wbr><span class="nowrap">ยาก</span> <wbr><span class="nowrap">ปุ่มหรือ</span><wbr><span class="nowrap">การ์ด</span><wbr><span class="nowrap">มี</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">สูง</span><wbr><span class="nowrap">ผิดปกติ</span> <wbr><span class="nowrap">ตาราง</span><wbr><span class="nowrap">แสดง</span><wbr><span class="nowrap">ผล</span><wbr><span class="nowrap">ผิด</span><wbr><span class="nowrap">สัดส่วน</span> <wbr><span class="nowrap">หรือ</span><wbr><span class="nowrap">แม้กระทั่ง</span><wbr><span class="nowrap">ความ</span><wbr><span class="nowrap">ล้มเหลว</span><wbr><span class="nowrap">ของ</span> layout <wbr><span class="nowrap">โดย</span><wbr><span class="nowrap">รวม</span><wbr><span class="nowrap">ในอุป</span><wbr><span class="nowrap">กรณ์</span><wbr><span class="nowrap">พกพา</span><wbr><span class="nowrap">ที่</span><wbr><span class="nowrap">มี</span><wbr><span class="nowrap">พื้นที่</span><wbr><span class="nowrap">แสดง</span><wbr><span class="nowrap">ผล</span><wbr><span class="nowrap">จำกัด</span></p></div>
       <div class="counter-row">
         <button class="count-btn problem" onclick="addCount('A',2,1)" style="background:var(--green-bg);border-color:var(--green-border);color:var(--green);">+ ปัญหา</button>
         <button class="count-btn undo" onclick="addCount('A',2,-1)">− undo</button>
         <span class="count-display" id="count-A-2">0</span>
         <button class="count-btn reset" onclick="resetCount('A',2)">reset</button>
       </div>
+      <div class="img-placeholder">📷 Image Slot <!-- <img src=""> --></div>
     </div>
   </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════ -->
-<!-- COMPARISON 3                                    -->
+<!-- COMPARISON 3                                 -->
 <!-- ═══════════════════════════════════════════════ -->
 <div class="comparison" id="comp-3">
   <div class="panel broken">
     <div class="panel-header">
-      <div class="panel-header-left"><span class="dot"></span> ❌ ก่อนทำ Wrapping (B)</div>
+      <div class="panel-header-left"><span class="dot"></span><span class="case-num">3</span> ❌ ก่อนทำ Wrapping (B)</div>
     </div>
     <div class="panel-body">
-      <div class="text-box resizable" id="box-broken-3"><p>โรงพยาบาลศิริราชเป็นสถาบันการแพทย์ระดับตติยภูมิที่มีคุณูปการอย่างลึกซึ้งต่อพัฒนาการของระบบสาธารณสุขไทยมาอย่างยาวนาน โดยไม่เพียงแต่เป็นสถานพยาบาลที่เก่าแก่ที่สุดในประเทศไทยซึ่งก่อตั้งขึ้นในสมัยพระบาทสมเด็จพระจุลจอมเกล้าเจ้าอยู่หัวเท่านั้น หากยังเป็นศูนย์กลางด้านการรักษาพยาบาลเฉพาะทาง การศึกษาทางการแพทย์ การวิจัยเชิงคลินิก และการพัฒนาองค์ความรู้ด้านวิทยาศาสตร์สุขภาพที่มีบทบาทเชิงยุทธศาสตร์ต่อประเทศในภาพรวม ปัจจุบันโรงพยาบาลแห่งนี้ให้บริการด้านสาธารณสุขแก่ประชาชนมากกว่าสามล้านคนต่อปี ภายใต้ภารกิจที่ครอบคลุมทั้งการรักษาโรคซับซ้อน การส่งเสริมสุขภาวะ การพัฒนานวัตกรรมทางการแพทย์ และการยกระดับมาตรฐานบริการสุขภาพอย่างเป็นระบบ</p>
-      <p>ต้าวตัวขาวนั้นหันขวาอย่างฉับพลัน เริ่ดเลยหล่ะ</p></div>
+      <div class="text-box resizable" id="box-broken-2">สวัสดีครับผมชื่อสมชายเป็นนักพัฒนาซอฟต์แวร์ที่ปฏิบัติงานอยู่ในกรุงเทพมหานครและมุ่งเน้นการพัฒนาระบบสารสนเทศอัจฉริยะที่สามารถรองรับการวิเคราะห์ข้อมูลเชิงคาดการณ์ การประมวลผลภาษาธรรมชาติ การเรียนรู้ของเครื่อง และการสนับสนุนการตัดสินใจเชิงกลยุทธ์ในระดับองค์กร ข้อมูลที่ครอบคลุมครบถ้วนเชิงพหุมิติ มีความถูกต้องเชิงโครงสร้าง สามารถตรวจสอบย้อนกลับได้ และสอดคล้องกับบริบทการใช้งานจริง จะช่วยให้กระบวนการบริหารจัดการทรัพยากร การวางแผนเชิงยุทธศาสตร์ และการเพิ่มประสิทธิผลของการดำเนินงานสามารถดำเนินไปได้อย่างเป็นระบบ โปร่งใส และมีประสิทธิภาพสูงสุด
+    </div>
       <div class="counter-row">
         <button class="count-btn problem" onclick="addCount('B',3,1)">+ ปัญหา</button>
         <button class="count-btn undo" onclick="addCount('B',3,-1)">− undo</button>
@@ -457,11 +476,10 @@
 
   <div class="panel fixed">
     <div class="panel-header">
-      <div class="panel-header-left"><span class="dot"></span> ✅ หลังทำ Wrapping (A)</div>
+      <div class="panel-header-left"><span class="dot"></span><span class="case-num">3</span> ✅ หลังทำ Wrapping (A)</div>
     </div>
     <div class="panel-body">
-      <div class="text-box resizable seg-container show-segments" id="box-fixed-3"><p>โรงพยาบาลศิริราชเป็นสถาบันการแพทย์ระดับตติยภูมิที่มีคุณูปการอย่างลึกซึ้งต่อพัฒนาการของระบบสาธารณสุขไทยมาอย่างยาวนาน โดยไม่เพียงแต่เป็นสถานพยาบาลที่เก่าแก่ที่สุดในประเทศไทยซึ่งก่อตั้งขึ้นในสมัยพระบาทสมเด็จพระจุลจอมเกล้าเจ้าอยู่หัวเท่านั้น หากยังเป็นศูนย์กลางด้านการรักษาพยาบาลเฉพาะทาง การศึกษาทางการแพทย์ การวิจัยเชิงคลินิก และการพัฒนาองค์ความรู้ด้านวิทยาศาสตร์สุขภาพที่มีบทบาทเชิงยุทธศาสตร์ต่อประเทศในภาพรวม ปัจจุบันโรงพยาบาลแห่งนี้ให้บริการด้านสาธารณสุขแก่ประชาชนมากกว่าสามล้านคนต่อปี ภายใต้ภารกิจที่ครอบคลุมทั้งการรักษาโรคซับซ้อน การส่งเสริมสุขภาวะ การพัฒนานวัตกรรมทางการแพทย์ และการยกระดับมาตรฐานบริการสุขภาพอย่างเป็นระบบ</p>
-      <p>ต้าวตัวขาวนั้นหันขวาอย่างฉับพลัน เริ่ดเลยหล่ะ</p></div>
+      <div class="text-box resizable seg-container show-segments" id="box-fixed-3">สวัสดีครับผมชื่อสมชายเป็นนักพัฒนาซอฟต์แวร์ที่ปฏิบัติงานอยู่ในกรุงเทพมหานครและมุ่งเน้นการพัฒนาระบบสารสนเทศอัจฉริยะที่สามารถรองรับการวิเคราะห์ข้อมูลเชิงคาดการณ์ การประมวลผลภาษาธรรมชาติ การเรียนรู้ของเครื่อง และการสนับสนุนการตัดสินใจเชิงกลยุทธ์ในระดับองค์กร ข้อมูลที่ครอบคลุมครบถ้วนเชิงพหุมิติ มีความถูกต้องเชิงโครงสร้าง สามารถตรวจสอบย้อนกลับได้ และสอดคล้องกับบริบทการใช้งานจริง จะช่วยให้กระบวนการบริหารจัดการทรัพยากร การวางแผนเชิงยุทธศาสตร์ และการเพิ่มประสิทธิภาพของการดำเนินงานสามารถดำเนินไปได้อย่างเป็นระบบ โปร่งใส และมีประสิทธิภาพสูงสุด</div>
       <div class="counter-row">
         <button class="count-btn problem" onclick="addCount('A',3,1)" style="background:var(--green-bg);border-color:var(--green-border);color:var(--green);">+ ปัญหา</button>
         <button class="count-btn undo" onclick="addCount('A',3,-1)">− undo</button>
@@ -478,10 +496,11 @@
 <div class="comparison" id="comp-4">
   <div class="panel broken">
     <div class="panel-header">
-      <div class="panel-header-left"><span class="dot"></span> ❌ ก่อนทำ Wrapping (B)</div>
+      <div class="panel-header-left"><span class="dot"></span><span class="case-num">4</span> ❌ ก่อนทำ Wrapping (B)</div>
     </div>
     <div class="panel-body">
-      <div class="text-box resizable" id="box-broken-4">สื่อมวลชนจีนประโคมข่าวท่ามกลางความวิตกว่าเขื่อนในประเทศจีนกว่า 100 ที่ไม่มีความปลอดภัย รายงานระบุว่านี่ยังเป็นภัยคุกคามอย่างมากต่อความปลอดภัยของประชาชน รายงานข่าวดังเมื่อมีการเปิดโลงศพ</div>
+      <div class="text-box resizable" id="box-broken-4"><p>โรงพยาบาลศิริราชเป็นสถาบันการแพทย์ระดับตติยภูมิที่มีคุณูปการอย่างลึกซึ้งต่อพัฒนาการของระบบสาธารณสุขไทยมาอย่างยาวนาน โดยไม่เพียงแต่เป็นสถานพยาบาลที่เก่าแก่ที่สุดในประเทศไทยซึ่งก่อตั้งขึ้นในสมัยพระบาทสมเด็จพระจุลจอมเกล้าเจ้าอยู่หัวเท่านั้น หากยังเป็นศูนย์กลางด้านการรักษาพยาบาลเฉพาะทาง การศึกษาทางการแพทย์ การวิจัยเชิงคลินิก และการพัฒนาองค์ความรู้ด้านวิทยาศาสตร์สุขภาพที่มีบทบาทเชิงยุทธศาสตร์ต่อประเทศในภาพรวม ปัจจุบันโรงพยาบาลแห่งนี้ให้บริการด้านสาธารณสุขแก่ประชาชนมากกว่าสามล้านคนต่อปี ภายใต้ภารกิจที่ครอบคลุมทั้งการรักษาโรคซับซ้อน การส่งเสริมสุขภาวะ การพัฒนานวัตกรรมทางการแพทย์ และการยกระดับมาตรฐานบริการสุขภาพอย่างเป็นระบบ</p>
+      <p>ต้าวตัวขาวนั้นหันขวาอย่างฉับพลัน เริ่ดเลยหล่ะ</p></div>
       <div class="counter-row">
         <button class="count-btn problem" onclick="addCount('B',4,1)">+ ปัญหา</button>
         <button class="count-btn undo" onclick="addCount('B',4,-1)">− undo</button>
@@ -493,15 +512,51 @@
 
   <div class="panel fixed">
     <div class="panel-header">
-      <div class="panel-header-left"><span class="dot"></span> ✅ หลังทำ Wrapping (A)</div>
+      <div class="panel-header-left"><span class="dot"></span><span class="case-num">4</span> ✅ หลังทำ Wrapping (A)</div>
     </div>
     <div class="panel-body">
-      <div class="text-box resizable seg-container show-segments" id="box-fixed-4">สื่อมวลชนจีนประโคมข่าวท่ามกลางความวิตกว่าเขื่อนในประเทศจีนกว่า 100 ที่ไม่มีความปลอดภัย รายงานระบุว่านี่ยังเป็นภัยคุกคามอย่างมากต่อความปลอดภัยของประชาชน รายงานข่าวดังเมื่อมีการเปิดโลงศพ</div>
+      <div class="text-box resizable seg-container show-segments" id="box-fixed-4"><p>โรงพยาบาลศิริราชเป็นสถาบันการแพทย์ระดับตติยภูมิที่มีคุณูปการอย่างลึกซึ้งต่อพัฒนาการของระบบสาธารณสุขไทยมาอย่างยาวนาน โดยไม่เพียงแต่เป็นสถานพยาบาลที่เก่าแก่ที่สุดในประเทศไทยซึ่งก่อตั้งขึ้นในสมัยพระบาทสมเด็จพระจุลจอมเกล้าเจ้าอยู่หัวเท่านั้น หากยังเป็นศูนย์กลางด้านการรักษาพยาบาลเฉพาะทาง การศึกษาทางการแพทย์ การวิจัยเชิงคลินิก และการพัฒนาองค์ความรู้ด้านวิทยาศาสตร์สุขภาพที่มีบทบาทเชิงยุทธศาสตร์ต่อประเทศในภาพรวม ปัจจุบันโรงพยาบาลแห่งนี้ให้บริการด้านสาธารณสุขแก่ประชาชนมากกว่าสามล้านคนต่อปี ภายใต้ภารกิจที่ครอบคลุมทั้งการรักษาโรคซับซ้อน การส่งเสริมสุขภาวะ การพัฒนานวัตกรรมทางการแพทย์ และการยกระดับมาตรฐานบริการสุขภาพอย่างเป็นระบบ</p>
+      <p>ต้าวตัวขาวนั้นหันขวาอย่างฉับพลัน เริ่ดเลยหล่ะ</p></div>
       <div class="counter-row">
         <button class="count-btn problem" onclick="addCount('A',4,1)" style="background:var(--green-bg);border-color:var(--green-border);color:var(--green);">+ ปัญหา</button>
         <button class="count-btn undo" onclick="addCount('A',4,-1)">− undo</button>
         <span class="count-display" id="count-A-4">0</span>
         <button class="count-btn reset" onclick="resetCount('A',4)">reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- COMPARISON 5                                    -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="comparison" id="comp-5">
+  <div class="panel broken">
+    <div class="panel-header">
+      <div class="panel-header-left"><span class="dot"></span><span class="case-num">5</span> ❌ ก่อนทำ Wrapping (B)</div>
+    </div>
+    <div class="panel-body">
+      <div class="text-box resizable" id="box-broken-5">สื่อมวลชนจีนประโคมข่าวท่ามกลางความวิตกว่าเขื่อนในประเทศจีนกว่า 100 ที่ไม่มีความปลอดภัย รายงานระบุว่านี่ยังเป็นภัยคุกคามอย่างมากต่อความปลอดภัยของประชาชน รายงานข่าวดังเมื่อมีการเปิดโลงศพ</div>
+      <div class="counter-row">
+        <button class="count-btn problem" onclick="addCount('B',5,1)">+ ปัญหา</button>
+        <button class="count-btn undo" onclick="addCount('B',5,-1)">− undo</button>
+        <span class="count-display" id="count-B-5">0</span>
+        <button class="count-btn reset" onclick="resetCount('B',5)">reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel fixed">
+    <div class="panel-header">
+      <div class="panel-header-left"><span class="dot"></span><span class="case-num">5</span> ✅ หลังทำ Wrapping (A)</div>
+    </div>
+    <div class="panel-body">
+      <div class="text-box resizable seg-container show-segments" id="box-fixed-5">สื่อมวลชนจีนประโคมข่าวท่ามกลางความวิตกว่าเขื่อนในประเทศจีนกว่า 100 ที่ไม่มีความปลอดภัย รายงานระบุว่านี่ยังเป็นภัยคุกคามอย่างมากต่อความปลอดภัยของประชาชน รายงานข่าวดังเมื่อมีการเปิดโลงศพ</div>
+      <div class="counter-row">
+        <button class="count-btn problem" onclick="addCount('A',5,1)" style="background:var(--green-bg);border-color:var(--green-border);color:var(--green);">+ ปัญหา</button>
+        <button class="count-btn undo" onclick="addCount('A',5,-1)">− undo</button>
+        <span class="count-display" id="count-A-5">0</span>
+        <button class="count-btn reset" onclick="resetCount('A',5)">reset</button>
       </div>
     </div>
   </div>
@@ -595,7 +650,7 @@
   };
 
   let currentSizeKey = 'S';
-  const NUM_SAMPLES = 4;
+  const NUM_SAMPLES = 5;
 
   const counts = { B: {}, A: {} };
   for (let i = 1; i <= NUM_SAMPLES; i++) { counts.B[i] = 0; counts.A[i] = 0; }

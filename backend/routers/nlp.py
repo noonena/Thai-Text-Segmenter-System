@@ -5,6 +5,7 @@ Uses complete_pipeline.py from backend/scripts/nlp_utils/
 
 import os
 import sys
+import json
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
@@ -36,6 +37,8 @@ except Exception as e:
     HAS_PIPELINE = False
 
 router = APIRouter()
+
+RESULTS_DIR = os.path.join(BACKEND_DIR, "results")
 
 # Singleton segmenter
 _segmenter = None
@@ -109,6 +112,9 @@ MAX_HTML_CHARS = 200_000
 
 class ProcessHtmlRequest(BaseModel):
     html: str
+    tag: Optional[str] = None
+    cssClass: Optional[str] = None
+    css_class: Optional[str] = None
 
 class SegmentTextRequest(BaseModel):
     text: str
@@ -118,6 +124,70 @@ class ExportTrainingRequest(BaseModel):
     segmented_words: List[str]
     confidence: float
     metadata: Optional[dict] = None
+
+
+def _read_json_if_exists(path: str):
+    if not os.path.exists(path):
+        return None
+    with open(path, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def _segment_text_unified(segmenter, text: str):
+    """Unified segmentation output for both HTML and Text endpoints."""
+    from features.pos_features import extract_features as extract_pos_features
+
+    words: List[str] = []
+    detailed_results = []
+    confidence_scores: List[float] = []
+
+    for chunk in re.split(r'(\s+)', text):
+        if chunk == "":
+            continue
+
+        if re.match(r'^\s+$', chunk):
+            words.append(' ')
+            detailed_results.append(
+                {
+                    "word": ' ',
+                    "pos": "PU",
+                    "syllables": [' '],
+                    "confidence": None,
+                }
+            )
+            continue
+
+        results = segmenter.segment_with_pos_and_syllables(chunk, show_debug=False)
+        chunk_words = [word for word, _, _ in results]
+        chunk_confidences: List[float] = []
+
+        if chunk_words:
+            pos_features = extract_pos_features(chunk_words)
+            pos_marginals = segmenter.pos_crf.predict_marginals([pos_features])[0]
+            chunk_confidences = [max(m.values(), default=0.0) for m in pos_marginals]
+
+        for i, (word, pos, syllables) in enumerate(results):
+            token_conf = chunk_confidences[i] if i < len(chunk_confidences) else 0.0
+            words.append(word)
+            confidence_scores.append(token_conf)
+            detailed_results.append(
+                {
+                    "word": word,
+                    "pos": pos,
+                    "syllables": syllables,
+                    "confidence": round(token_conf, 4),
+                }
+            )
+
+    overall_confidence = (
+        sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0.0
+    )
+
+    return {
+        "words": words,
+        "detailed": detailed_results,
+        "confidence": round(overall_confidence, 4),
+    }
 
 
 # =====================================================
@@ -133,15 +203,44 @@ async def process_html(request: ProcessHtmlRequest, _user: dict = Depends(requir
             raise HTTPException(status_code=413, detail=f"HTML content exceeds maximum size of {MAX_HTML_CHARS} characters")
         
         segmenter = get_segmenter()
-        
+
+        wrap_tag = (request.tag or "span").lower()
+        if wrap_tag not in {"span", "div"}:
+            wrap_tag = "span"
+
+        css_class = (request.cssClass if request.cssClass is not None else request.css_class) or ""
+        css_class = css_class.strip()
+
+        thai_word_pattern = re.compile(r'[\u0E00-\u0E7F]')
+
+        def wrap_words(words: List[str]) -> str:
+            wrapped_parts: List[str] = []
+            for word in words:
+                if thai_word_pattern.search(word):
+                    if css_class:
+                        wrapped_parts.append(f'<wbr><{wrap_tag} class="{css_class}">{word}</{wrap_tag}>')
+                    else:
+                        wrapped_parts.append(f'<wbr><{wrap_tag}>{word}</{wrap_tag}>')
+                else:
+                    wrapped_parts.append(word)
+            return ''.join(wrapped_parts)
+
         thai_pattern = re.compile(r'[\u0E00-\u0E7F]+(?:\s+[\u0E00-\u0E7F]+)*')
         wrapped_html = request.html
         matches = list(thai_pattern.finditer(request.html))
+        confidence_scores: List[float] = []
+        segmented_chunks: List[tuple] = []
         
         for match in reversed(matches):
             thai_text = match.group()
-            words = segmenter.segment_words(thai_text)
-            wrapped_text = '<wbr>'.join(words)
+            segmented = _segment_text_unified(segmenter, thai_text)
+            segmented_chunks.append((match.start(), segmented["words"]))
+            confidence_scores.extend(
+                d["confidence"]
+                for d in segmented["detailed"]
+                if d.get("confidence") is not None
+            )
+            wrapped_text = wrap_words(segmented["words"])
             wrapped_html = (
                 wrapped_html[:match.start()] + 
                 wrapped_text + 
@@ -149,6 +248,12 @@ async def process_html(request: ProcessHtmlRequest, _user: dict = Depends(requir
             )
         
         segment_count = wrapped_html.count('<wbr>')
+        segmented_words: List[str] = []
+        for _, words in sorted(segmented_chunks, key=lambda x: x[0]):
+            segmented_words.extend(words)
+        overall_confidence = (
+            sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0.0
+        )
         
         return {
             "success": True,
@@ -156,6 +261,8 @@ async def process_html(request: ProcessHtmlRequest, _user: dict = Depends(requir
                 "wrapped_html": wrapped_html,
                 "processed_html": wrapped_html,
                 "segment_count": segment_count,
+                "segmented_words": segmented_words,
+                "confidence": round(overall_confidence, 4),
                 "original_length": len(request.html),
                 "processed_length": len(wrapped_html)
             }
@@ -178,30 +285,15 @@ async def segment_text(request: SegmentTextRequest, _user: dict = Depends(requir
             raise HTTPException(status_code=413, detail=f"Text exceeds maximum size of {MAX_TEXT_CHARS} characters")
         
         segmenter = get_segmenter()
-
-        # Split on whitespace, process each chunk separately, preserve spaces as separators
-        words = []
-        detailed_results = []
-        for chunk in re.split(r'(\s+)', request.text.strip()):
-            if not chunk:
-                continue
-            if re.match(r'^\s+$', chunk):
-                # Keep space as a separator token
-                words.append(' ')
-                detailed_results.append({"word": ' ', "pos": "PU", "syllables": [' ']})
-            else:
-                results = segmenter.segment_with_pos_and_syllables(chunk, show_debug=False)
-                for word, pos, syllables in results:
-                    words.append(word)
-                    detailed_results.append({"word": word, "pos": pos, "syllables": syllables})
+        segmented = _segment_text_unified(segmenter, request.text.strip())
         
         return {
             "success": True,
             "data": {
-                "words": words,
-                "word_count": len(words),
-                "confidence": 0.95,
-                "detailed": detailed_results
+                "words": segmented["words"],
+                "word_count": len(segmented["words"]),
+                "confidence": segmented["confidence"],
+                "detailed": segmented["detailed"],
             }
         }
         
@@ -240,6 +332,41 @@ async def export_training_data(request: ExportTrainingRequest, _user: dict = Dep
     except Exception as e:
         print(f"Error exporting training data: {str(e)}")
         return {"success": False, "error": "Export failed"}
+
+
+@router.get("/metrics")
+async def get_metrics(_user: dict = Depends(require_auth)):
+    """Return latest offline evaluation metrics from backend/results/*.json"""
+    try:
+        files = {
+            "evaluation": os.path.join(RESULTS_DIR, "evaluation_results.json"),
+            "mtu": os.path.join(RESULTS_DIR, "mtu_results.json"),
+            "syllable": os.path.join(RESULTS_DIR, "syllable_results.json"),
+            "word_seg": os.path.join(RESULTS_DIR, "word_seg_results.json"),
+            "pos": os.path.join(RESULTS_DIR, "pos_results.json"),
+        }
+
+        data = {name: _read_json_if_exists(path) for name, path in files.items()}
+        available = [name for name, payload in data.items() if payload is not None]
+
+        if not available:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No evaluation files found in: {RESULTS_DIR}"
+            )
+
+        return {
+            "success": True,
+            "data": {
+                "available": available,
+                "results": data,
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error loading metrics: {str(e)}")
+        return {"success": False, "error": "Failed to load metrics"}
 
 
 # @router.get("/health")

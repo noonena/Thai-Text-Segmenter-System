@@ -5,7 +5,7 @@ Pipeline:
 Text
  → MTU Segmentation (CRF)
  → Syllable Segmentation (CRF)
- → Word Segmentation (Viterbi with dictionary + context)
+ → Word Segmentation (Viterbi; optional POS reranking)
  → POS Tagging (CRF)
 """
 
@@ -79,9 +79,7 @@ class ThaiTextSegmenter:
             self.pos_crf = pickle.load(f)
 
         print(f"Loading Word Segmenter: {word_segmentation_path}")
-        with open(word_segmentation_path, "rb") as f:
-            dictionary = pickle.load(f)
-        self.word_segmenter = ViterbiSegmenter(dictionary, pos_crf=self.pos_crf)
+        self.word_segmenter = ViterbiSegmenter(word_segmentation_path, pos_crf=self.pos_crf)
         self.dictionary = self.word_segmenter.dictionary
 
         print("Pipeline ready\n")
@@ -138,9 +136,9 @@ class ThaiTextSegmenter:
         return result
 
     # =====================================================
-    # WORD - Using Viterbi for better compound word detection
+    # WORD - default Viterbi; optional POS reranking
     # =====================================================
-    def segment_words(self, text: str) -> List[str]:
+    def segment_words(self, text: str, use_pos_rerank: bool = False) -> List[str]:
         import re
         if not text or not text.strip():
             return []
@@ -152,7 +150,15 @@ class ThaiTextSegmenter:
                 try:
                     mtus = self._segment_to_mtus(token)
                     syllables = self._segment_to_syllables(mtus)
-                    results.extend(self.word_segmenter.segment(syllables))
+                    if use_pos_rerank and self.pos_crf is not None:
+                        results.extend(
+                            self.word_segmenter.segment_with_pos_reranking(
+                                syllables,
+                                self.pos_crf,
+                            )
+                        )
+                    else:
+                        results.extend(self.word_segmenter.segment(syllables))
                 except Exception as e:
                     print(f"[WARN] Word segmentation failed for '{token}': {e}")
                     results.append(token)

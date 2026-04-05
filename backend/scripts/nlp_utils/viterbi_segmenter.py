@@ -124,7 +124,6 @@ class ViterbiSegmenter:
         return result
 
     def segment_with_viterbi(self, syllables: List[str]) -> List[str]:
-        """Viterbi word segmentation over syllable units."""
         if not syllables:
             return []
 
@@ -137,11 +136,6 @@ class ViterbiSegmenter:
         for pos in range(n):
             if dp[pos] == -float('inf'):
                 continue
-            # พัด ลม
-            # ['พัด', 'ลม'] # syllables
-            # พัดลม
-            # ['พัดลม'] -> candidate='พัดลม', length=2 # word candidates
-            # 0, 1
             for candidate, length in self._syllable_to_words(syllables, pos):
                 next_pos = pos + length
                 total_score = dp[pos] + self._score_word(candidate, length, pos, n)
@@ -168,6 +162,8 @@ class ViterbiSegmenter:
         """Returns the top-k segmentations as (score, words) pairs, best first."""
         if not syllables:
             return [(0.0, [])]
+
+        syllables = self._repair_syllables(syllables)
 
         n = len(syllables)
         beams: List[List] = [[] for _ in range(n + 1)]
@@ -197,36 +193,36 @@ class ViterbiSegmenter:
         lam: float = 0.3,
         k: int = 5,
     ) -> List[str]:
-        """k-best Viterbi reranked by POS CRF."""
+        """Rerank k-best word paths using POS confidence."""
         # try:
         from features.pos_features import extract_features as _pos_features
         # except ImportError:
         #     from pos_features import extract_features as _pos_features
 
-        candidates = self.segment_with_viterbi_kbest(syllables, k=k)
-        if candidates:
-            best_words: List[str] = candidates[0][1]
+        kbest_word_paths = self.segment_with_viterbi_kbest(syllables, k=k)
+        if kbest_word_paths:
+            best_words: List[str] = kbest_word_paths[0][1]
         else:
             best_words: List[str] = syllables[:]
-        best_combined = -float('inf')
+        best_final_score = -float('inf')
 
-        if len(candidates) >= 2:
-            gap = candidates[0][0] - candidates[1][0]
-            if gap > 5.0:
+        if len(kbest_word_paths) >= 2:
+            top_score_gap = kbest_word_paths[0][0] - kbest_word_paths[1][0]
+            if top_score_gap > 5.0:
                 return self.merge_number_classifier(best_words)
 
-        for viterbi_score, words in candidates:
+        for word_path_score, words in kbest_word_paths:
             if not words:
                 continue
             features = _pos_features(words)
             marginals = pos_crf.predict_marginals([features])[0]
-            pos_score = sum(
+            pos_rerank_score = sum(
                 math.log(max(m.values(), default=1e-10) + 1e-10)
                 for m in marginals
             )
-            combined = viterbi_score + lam * pos_score
-            if combined > best_combined:
-                best_combined = combined
+            final_score = word_path_score + lam * pos_rerank_score
+            if final_score > best_final_score:
+                best_final_score = final_score
                 best_words = words
 
         return self.merge_number_classifier(best_words)

@@ -28,7 +28,6 @@ def is_number(s: str) -> bool:
 
 def is_valid_thai_word(word: str) -> bool:
     """Check if word contains Thai consonants and has reasonable structure."""
-    # NOTE: This is a heuristic to help the Viterbi segmenter prefer valid Thai words. It does not take in the account of special cases like "ณ" or "ฤ" which can be valid words on their own.
     if not word:
         return False
     has_consonant = any(c in CONSONANTS for c in word)

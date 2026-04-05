@@ -18,7 +18,7 @@ from collections import defaultdict, Counter
 # but which feel like natural units in practice.
 FORCED_COMPOUNDS = {
     # Common compound words
-    'ตากลม':    'ADJ',
+    # 'ตากลม':    'ADJ',
     'ซักผ้า':   'VACT',
     'หญิงสาว':  'NCMN',
     # Country names (ประเทศ + country)
@@ -69,7 +69,7 @@ class LST20Dictionary:
             'compounds_generated': 0
         }
 
-    def add_word(self, word: str, pos: str = "XX", count: int = 1):
+    def add_word(self, word: str, pos: str = "UNK", count: int = 1):
         if word == "_":
             return
         self.words.add(word)
@@ -81,7 +81,7 @@ class LST20Dictionary:
 
     def get_most_likely_pos(self, word: str) -> str:
         if word not in self.word_to_pos:
-            return "XX"
+            return "UNK"
         return self.word_to_pos[word].most_common(1)[0][0]
 
     def load_from_lst20(self, train_dir: str):
@@ -95,7 +95,6 @@ class LST20Dictionary:
         bigram_counts = defaultdict(int)
         sentence_count = 0
         word_count = 0
-        record_counts = 0
 
         print("\nPhase 1: Loading words and tracking co-occurrences...")
 
@@ -113,7 +112,6 @@ class LST20Dictionary:
                         if sentence_words:
                             for j in range(len(sentence_words) - 1):
                                 bigram_counts[(sentence_words[j], sentence_words[j + 1])] += 1
-                            record_counts += len(sentence_words)
                             sentence_count += 1
                             sentence_words = []
                         continue
@@ -134,14 +132,13 @@ class LST20Dictionary:
 
         print("\nPhase 2: Generating compound words...")
         compounds_added = 0
-        bigram_threshold = min(10, record_counts * 1.75e-6)
 
         # Frequent bigrams (appear 10+ times)
         for (word1, word2), count in bigram_counts.items():
-            if count >= bigram_threshold:
+            if count >= 10:
                 compound = word1 + word2
                 # Skip if both parts already exist — it's a frequent phrase, not a lexical unit
-                if word1 == word2:
+                if word1 in self.words and word2 in self.words:
                     continue
                 if len(compound) <= 15:
                     self.add_word(compound, 'COMPOUND', count=count)
