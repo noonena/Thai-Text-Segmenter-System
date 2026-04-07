@@ -12,7 +12,6 @@ from pydantic import BaseModel
 from typing import Optional, List
 import re
 from scripts.nlp_utils.complete_pipeline import SegmentStats
-from utils.database import require_auth
 
 # =====================================================
 # Setup paths for NLP pipeline
