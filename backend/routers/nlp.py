@@ -5,11 +5,13 @@ Uses complete_pipeline.py from backend/scripts/nlp_utils/
 
 import os
 import sys
+import time
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional, List
 import re
+from scripts.nlp_utils.complete_pipeline import SegmentStats
 from utils.database import require_auth
 
 # =====================================================
@@ -43,7 +45,7 @@ _segmenter = None
 def get_segmenter():
     """Get or initialize the Thai text segmenter"""
     global _segmenter
-    
+
     if _segmenter is not None:
         return _segmenter
 
@@ -52,7 +54,7 @@ def get_segmenter():
             status_code=500,
             detail=f"Thai NLP pipeline not available. complete_pipeline.py not found in: {NLP_UTILS_DIR}"
         )
-    
+
     try:
         BASE_PATH = os.path.join(BACKEND_DIR, "models")
 
@@ -89,7 +91,7 @@ def get_segmenter():
         )
         print("[OK] Pipeline initialized successfully")
         return _segmenter
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -131,25 +133,27 @@ async def process_html(request: ProcessHtmlRequest, _user: dict = Depends(requir
             raise HTTPException(status_code=400, detail="HTML content is required")
         if len(request.html) > MAX_HTML_CHARS:
             raise HTTPException(status_code=413, detail=f"HTML content exceeds maximum size of {MAX_HTML_CHARS} characters")
-        
+
         segmenter = get_segmenter()
-        
+        stats: SegmentStats = SegmentStats()
         thai_pattern = re.compile(r'[\u0E00-\u0E7F]+(?:\s+[\u0E00-\u0E7F]+)*')
         wrapped_html = request.html
         matches = list(thai_pattern.finditer(request.html))
-        
+
         for match in reversed(matches):
             thai_text = match.group()
-            words = segmenter.segment_words(thai_text)
+            words, _stats = segmenter.segment_words(thai_text)
+            stats.append(_stats)
             wrapped_text = '<wbr>'.join(words)
             wrapped_html = (
-                wrapped_html[:match.start()] + 
-                wrapped_text + 
+                wrapped_html[:match.start()] +
+                wrapped_text +
                 wrapped_html[match.end():]
             )
-        
+
         segment_count = wrapped_html.count('<wbr>')
-        
+        stats.compile()
+
         return {
             "success": True,
             "data": {
@@ -157,10 +161,13 @@ async def process_html(request: ProcessHtmlRequest, _user: dict = Depends(requir
                 "processed_html": wrapped_html,
                 "segment_count": segment_count,
                 "original_length": len(request.html),
-                "processed_length": len(wrapped_html)
+                "processed_length": len(wrapped_html),
+                "token_count": stats.tok_count if stats else None,
+                "tokenize_tps": stats.tokenize_spd if stats else None,
+                "segment_tps": stats.segment_spd if stats else None,
             }
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -176,35 +183,49 @@ async def segment_text(request: SegmentTextRequest, _user: dict = Depends(requir
             raise HTTPException(status_code=400, detail="Text is required")
         if len(request.text) > MAX_TEXT_CHARS:
             raise HTTPException(status_code=413, detail=f"Text exceeds maximum size of {MAX_TEXT_CHARS} characters")
-        
+
         segmenter = get_segmenter()
 
         # Split on whitespace, process each chunk separately, preserve spaces as separators
         words = []
+        stats: SegmentStats = SegmentStats()
         detailed_results = []
+        start_epoch = time.time()
+        chunk_count = 0
         for chunk in re.split(r'(\s+)', request.text.strip()):
             if not chunk:
                 continue
+
+            chunk_count += 1
             if re.match(r'^\s+$', chunk):
                 # Keep space as a separator token
                 words.append(' ')
                 detailed_results.append({"word": ' ', "pos": "PU", "syllables": [' ']})
             else:
-                results = segmenter.segment_with_pos_and_syllables(chunk, show_debug=False)
+                results, _stats = segmenter.segment_with_pos_and_syllables(chunk, show_debug=False)
+                stats.append(_stats)
                 for word, pos, syllables in results:
                     words.append(word)
                     detailed_results.append({"word": word, "pos": pos, "syllables": syllables})
-        
+        end_epoch = time.time()
+        processing_time = end_epoch - start_epoch
+        stats.compile()
+
         return {
             "success": True,
             "data": {
-                "words": words,
+                "chunks": chunk_count,
                 "word_count": len(words),
-                "confidence": 0.95,
+                "chunks_cps": chunk_count / processing_time if processing_time > 0 else None,
+                "token_count": stats.tok_count if stats else None,
+                "tokenize_tps": stats.tokenize_spd if stats else None,
+                "segment_tps": stats.segment_spd if stats else None,
+                "postprocess_tps": stats.postprocess_spd if stats else None,
+                "words": words,
                 "detailed": detailed_results
             }
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:

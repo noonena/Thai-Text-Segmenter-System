@@ -12,6 +12,7 @@ Text
 import os
 import sys
 import pickle
+import time
 from typing import List, Tuple
 
 # =====================================================
@@ -52,6 +53,24 @@ from lst20_dictionary_builder import LST20Dictionary  # type: ignore # required 
 from viterbi_segmenter import ViterbiSegmenter
 from features.mtu_features import segment_text_to_mtus
 from features.syllable_utils import orthographic_syllabify
+
+class SegmentStats:
+    def __init__(self, tok_count=0, tokenize_duration=0, segment_duration=0, postprocess_duration=0):
+        self.tok_count = tok_count
+        self.tokenize_duration = tokenize_duration
+        self.segment_duration = segment_duration
+        self.postprocess_duration = postprocess_duration
+
+    def append(self, other: 'SegmentStats'):
+        self.tok_count += other.tok_count
+        self.tokenize_duration += other.tokenize_duration
+        self.segment_duration += other.segment_duration
+        self.postprocess_duration += other.postprocess_duration
+
+    def compile(self):
+        self.tokenize_spd = self.tok_count / self.tokenize_duration if self.tokenize_duration > 0 else 0
+        self.segment_spd = self.tok_count / self.segment_duration if self.segment_duration > 0 else 0
+        self.postprocess_spd = self.tok_count / self.postprocess_duration if self.postprocess_duration > 0 else 0
 
 
 class ThaiTextSegmenter:
@@ -140,47 +159,68 @@ class ThaiTextSegmenter:
     # =====================================================
     # WORD - Using Viterbi for better compound word detection
     # =====================================================
-    def segment_words(self, text: str) -> List[str]:
+    def segment_words(self, text: str) -> Tuple[List[str], SegmentStats]:
         import re
         if not text or not text.strip():
-            return []
+            return [], SegmentStats()
 
         results = []
+        tokenize_duration = 0
+        segment_duration = 0
         for chunk in re.finditer(r'[\u0E00-\u0E7F]+|[^\u0E00-\u0E7F]+', text):
             token = chunk.group()
             if re.fullmatch(r'[\u0E00-\u0E7F]+', token):
                 try:
+                    start_tokenize = time.time()
                     mtus = self._segment_to_mtus(token)
                     syllables = self._segment_to_syllables(mtus)
+                    start_segment = time.time()
+                    tokenize_duration += start_segment - start_tokenize
                     results.extend(self.word_segmenter.segment(syllables))
+                    segment_duration += time.time() - start_segment
                 except Exception as e:
                     print(f"[WARN] Word segmentation failed for '{token}': {e}")
                     results.append(token)
             else:
                 results.append(token)
-        return results
+
+        stats = SegmentStats(tok_count=len(results), tokenize_duration=tokenize_duration, segment_duration=segment_duration)
+        return results, stats
 
     # =====================================================
     # WORD + POS + SYLLABLE
     # =====================================================
-    def segment_with_pos_and_syllables(self, text: str, show_debug=False) -> List[Tuple[str, str, List[str]]]:
+    def segment_with_pos_and_syllables(self, text: str, show_debug=False) -> Tuple[List[Tuple[str, str, List[str]]], SegmentStats]:
         from features.pos_features import extract_features
 
+        start_tokenize = time.time()
         # MTU
         mtus = self._segment_to_mtus(text)
 
         # Syllable
         syllables = self._segment_to_syllables(mtus)
 
+        start_segment = time.time()
+        tokenize_duration = start_segment - start_tokenize
         # Word (k-best Viterbi reranked by POS CRF)
         fixed_words = self.word_segmenter.segment_with_pos_reranking(syllables, self.pos_crf)
 
+        start_postprocess = time.time()
+        segment_duration = start_postprocess - start_segment
         # POS tagging
         features = extract_features(fixed_words)
         pos_tags = self.pos_crf.predict([features])[0]
 
         # Syllable alignment
         word_syllables = self._map_syllables_to_words(fixed_words, syllables)
+        postprocess_duration = time.time() - start_postprocess
+
+        stats = SegmentStats(
+            len(syllables),
+            tokenize_duration=tokenize_duration,
+            segment_duration=segment_duration,
+            postprocess_duration=postprocess_duration
+        )
 
         if show_debug:
             print("MTUs      :", " | ".join(mtus))
@@ -188,7 +228,7 @@ class ThaiTextSegmenter:
             print("Words     :", " | ".join(fixed_words))
             print("POS Tags  :", " | ".join(pos_tags))
 
-        return list(zip(fixed_words, pos_tags, word_syllables))
+        return (list(zip(fixed_words, pos_tags, word_syllables)), stats)
 
 
 # =====================================================
@@ -216,9 +256,12 @@ def main():
     for t in tests:
         print("=" * 80)
         print("Input:", t)
-        result = segmenter.segment_with_pos_and_syllables(t, show_debug=True)
+        result, stats = segmenter.segment_with_pos_and_syllables(t, show_debug=True)
         for w, p, s in result:
             print(f"{w:15} → {p:6} | syllables: {'-'.join(s)}")
+
+        stats.compile()
+        print(f"Stats: Tokenize: {stats.tokenize_spd:.4f}s, Segment: {stats.segment_spd:.4f}s, Postprocess: {stats.postprocess_spd:.4f}s")
 
     print("\n✅ Pipeline complete")
 
