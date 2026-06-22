@@ -130,3 +130,26 @@ This project does not directly copy the thesis implementation. Instead, the meth
 ## Project Purpose
 
 The purpose of this project is to turn a Thai text segmentation concept into a practical and usable system. It demonstrates how academic NLP ideas can be adapted into a real web application with frontend, backend, database and machine learning components.
+
+---
+
+# Thai Segmentation System Server
+
+## Development
+
+### Backend
+
+To run the backend server, navigate to the `backend` directory and execute:
+
+```bash
+uv run main.py
+```
+
+### Frontend
+
+To run the frontend development server, navigate to the `frontend` directory and execute:
+
+```bash
+npm install # run once
+npm run dev
+```
