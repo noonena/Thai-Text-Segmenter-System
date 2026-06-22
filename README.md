@@ -7,7 +7,7 @@ Thai text segmentation is challenging because Thai sentences are often written w
 ---
 
 ### Demo
-[![YouTube Video ETCGHgNMFzw](https://utfs.io/f/nGnSqDveMsqx6zx24n7JTK7HUg0zjInSLo1p352xXZkOGhbN)](https://www.youtube.com/watch?v=ETCGHgNMFzw)
+[![YouTube Video qYPyIiI_O9k](https://utfs.io/f/nGnSqDveMsqxfCR27I8SwoegrUBJZjmC8iTa4NsIvbOnMyR6)](https://www.youtube.com/watch?v=qYPyIiI_O9k)
 
 ---
 ## Before and After
