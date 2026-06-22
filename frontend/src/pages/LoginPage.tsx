@@ -13,7 +13,7 @@ interface User {
   name: string;
 }
 
-export default function LoginPage() {
+export default function LoginPage({ onSuccess }: { onSuccess?: () => void }) {
   const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -30,6 +30,7 @@ export default function LoginPage() {
       // Use API login
       await login(username, password);
       setLoading(false);
+      onSuccess?.();
     } catch (error: any) {
       setError(error.message || "Login failed. Please try again.");
       setLoading(false);

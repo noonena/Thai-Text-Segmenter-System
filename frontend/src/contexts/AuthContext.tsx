@@ -55,6 +55,7 @@ const ROLE_PERMISSIONS = {
     PERMISSIONS.PROCESS_TEXT,
     PERMISSIONS.PROCESS_HTML,
     PERMISSIONS.VIEW_HISTORY,
+    PERMISSIONS.ACCESS_SETTINGS,
   ],
 } as const;
 
@@ -153,8 +154,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Check if user has specific permission
   const hasPermission = (permission: string): boolean => {
-    if (!user) return false;
-
+    if (!user) {
+      return permission === PERMISSIONS.PROCESS_TEXT || permission === PERMISSIONS.PROCESS_HTML || permission === PERMISSIONS.VIEW_HISTORY;
+    }
     const userPermissions = ROLE_PERMISSIONS[user.role] || [];
     return userPermissions.includes(permission as any);
   };

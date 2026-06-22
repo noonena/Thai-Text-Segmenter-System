@@ -1,5 +1,5 @@
 // export default App;
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProcessHtmlPage from "./pages/ProcessHtmlPage";
 import ProcessTextPage from "./pages/ProcessTextPage";
 import HistoryPage from "./pages/HistoryPage";
@@ -8,7 +8,7 @@ import SettingPage from "./pages/SettingPage";
 import LoginPage from "./pages/LoginPage";
 import UserManagementPage from "./pages/UserManagementPage";
 import RoleManagementPage from "./pages/RoleManagementPage";
-import { Settings, FileText, History, ChartLine, LogOut, User, Users, Shield } from 'lucide-react';
+import { Settings, FileText, History, ChartLine, LogOut, User, Users, Shield, X } from 'lucide-react';
 import { AuthProvider, useAuth, PERMISSIONS } from "./contexts/AuthContext";
 import { ProcessingProvider } from "./contexts/ProcessingContext";
 import { ProcessingModal } from "./components/ProcessingModal";
@@ -23,7 +23,34 @@ type InputActive = "active" | "inactive";
 function AppContent() {
   const { user, logout, isAuthenticated, isLoading, hasPermission } = useAuth();
 
-  // Wait for token verification before deciding which page to show
+  const [page, setPage] = useState<Page>("process");
+  const [inputMode, setInputMode] = useState<InputMode>("html");
+  const [inputActive, setInputActive] = useState<InputActive>("active");
+  const [open, setOpen] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [settings, setSettings] = useState({
+    tag: "span" as "span" | "div",
+    cssClass: ""
+  });
+
+  useEffect(() => {
+    const checkHash = () => {
+      if (window.location.hash === '#admin') {
+        setShowLogin(true);
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
+  }, []);
+
+
+  const handleApplySettings = (newSettings: { tag: "span" | "div"; cssClass: string }) => {
+    setSettings(newSettings);
+    console.log("Applied settings:", newSettings);
+  };
+
   if (isLoading) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -31,26 +58,9 @@ function AppContent() {
       </div>
     );
   }
-  const [page, setPage] = useState<Page>("process");
-  const [inputMode, setInputMode] = useState<InputMode>("html");
-  const [inputActive, setInputActive] = useState<InputActive>("active");
-  const [open, setOpen] = useState(false);
-  const [settings, setSettings] = useState({
-    tag: "span" as "span" | "div",
-    cssClass: ""
-  });
-
-  const handleApplySettings = (newSettings: { tag: "span" | "div"; cssClass: string }) => {
-    setSettings(newSettings);
-    console.log("Applied settings:", newSettings);
-  };
-
-  // If not authenticated, show login page
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
 
 return (
+    <>
     <div>
       <div className="h-screen">
         <div className="max-w-[95%] mx-auto pt-[2.5%] flex flex-col h-full">
@@ -77,27 +87,24 @@ return (
             </div>
             </div>
             <div className="flex items-center gap-4">
-              {/* Settings button - only for admin */}
-              {hasPermission(PERMISSIONS.ACCESS_SETTINGS) && (
-                <button onClick={() => setOpen(true)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none">
-                  <Settings className="w-6 h-6" />
-                </button>
-              )}
-              
-              {/* User menu */}
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg">
-                  <User className="w-4 h-4 text-gray-600" />
-                  <span className="text-sm text-gray-700">{user?.username}</span>
+              <button onClick={() => setOpen(true)} className="p-2 hover:bg-gray-300 rounded-lg transition-colors focus:outline-none">
+                <Settings className="w-6 h-6" />
+              </button>
+              {isAuthenticated && (
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg">
+                    <User className="w-4 h-4 text-gray-600" />
+                    <span className="text-sm text-gray-700">{user?.username}</span>
+                  </div>
+                  <button
+                    onClick={logout}
+                    className="p-2 hover:bg-gray-300 rounded-lg transition-colors focus:outline-none"
+                    title="Logout"
+                  >
+                    <LogOut className="w-5 h-5 text-gray-600" />
+                  </button>
                 </div>
-                <button 
-                  onClick={logout}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none"
-                  title="Logout"
-                >
-                  <LogOut className="w-5 h-5 text-gray-600" />
-                </button>
-              </div>
+              )}
             </div>
             {open && (
               <SettingPage 
@@ -119,10 +126,10 @@ return (
                         setInputActive("active");
                       }}
                       className={
-                        "flex-1 sm:flex-0 px-4 sm:px-6 lg:px-10 py-2 rounded-t-lg " +
+                        "flex-1 sm:flex-0 px-4 sm:px-6 lg:px-10 py-2 rounded-t-lg transition-colors " +
                         (page === "process"
                           ? "bg-black text-white"
-                          : "bg-transparent text-black")
+                          : "bg-transparent text-black hover:bg-gray-300")
                       }
                     >
                       <span className="flex items-center gap-2">
@@ -140,10 +147,10 @@ return (
                         setInputActive("inactive");
                       }}
                       className={
-                        "flex-1 sm:flex-0 px-4 sm:px-6 lg:px-10 py-2 rounded-t-lg " +
+                        "flex-1 sm:flex-0 px-4 sm:px-6 lg:px-10 py-2 rounded-t-lg transition-colors " +
                         (page === "history"
                           ? "bg-black text-white"
-                          : "bg-transparent text-black")
+                          : "bg-transparent text-black hover:bg-gray-300")
                       }
                     >
                       <span className="flex items-center gap-2">
@@ -161,10 +168,10 @@ return (
                          setInputActive("inactive");
                        }}
                        className={
-                         "flex-1 sm:flex-0 px-4 sm:px-6 lg:px-10 py-2 rounded-t-lg " +
+                         "flex-1 sm:flex-0 px-4 sm:px-6 lg:px-10 py-2 rounded-t-lg transition-colors " +
                          (page === "stats"
                            ? "bg-black text-white"
-                           : "bg-transparent text-black")
+                           : "bg-transparent text-black hover:bg-gray-300")
                        }
                      >
                        <span className="flex items-center gap-2">
@@ -182,10 +189,10 @@ return (
                          setInputActive("inactive");
                        }}
                        className={
-                         "flex-1 sm:flex-0 px-4 sm:px-6 lg:px-10 py-2 rounded-t-lg " +
+                         "flex-1 sm:flex-0 px-4 sm:px-6 lg:px-10 py-2 rounded-t-lg transition-colors " +
                          (page === "users"
                            ? "bg-black text-white"
-                           : "bg-transparent text-black")
+                           : "bg-transparent text-black hover:bg-gray-300")
                        }
                      >
                        <span className="flex items-center gap-2">
@@ -203,10 +210,10 @@ return (
                          setInputActive("inactive");
                        }}
                        className={
-                         "flex-1 sm:flex-0 px-4 sm:px-6 lg:px-10 py-2 rounded-t-lg " +
+                         "flex-1 sm:flex-0 px-4 sm:px-6 lg:px-10 py-2 rounded-t-lg transition-colors " +
                          (page === "roles"
                            ? "bg-black text-white"
-                           : "bg-transparent text-black")
+                           : "bg-transparent text-black hover:bg-gray-300")
                        }
                      >
                        <span className="flex items-center gap-2">
@@ -217,14 +224,14 @@ return (
                    )}
                 </div>
                 {inputActive === "active" && (
-                  <div className="flex w-full sm:w-[15%] h-9 sm:h-full rounded-lg border-2 border-black mt-1 sm:mt-0">
+                  <div className="flex w-full sm:w-[15%] h-9 sm:h-full rounded-lg border-2 border-black mt-1 sm:mt-0 overflow-hidden">
                     <button
                       onClick={() => setInputMode("html")}
                       className={
-                        "flex-1 text-center " +
+                        "flex-1 text-center transition-colors " +
                         (inputMode === "html"
                           ? "bg-black text-white rounded-r-lg rounded-l-sm"
-                          : "bg-transparent text-black")
+                          : "bg-transparent text-black hover:bg-gray-300")
                       }
                     >
                       HTML
@@ -232,10 +239,10 @@ return (
                     <button
                       onClick={() => setInputMode("text")}
                       className={
-                        "flex-1 text-center " +
+                        "flex-1 text-center transition-colors " +
                         (inputMode === "text"
                           ? "bg-black text-white rounded-l-lg rounded-r-sm"
-                          : "bg-transparent text-black")
+                          : "bg-transparent text-black hover:bg-gray-300")
                       }
                     >
                       Text
@@ -260,6 +267,20 @@ return (
          </div>
        </div>
      </div>
+
+     {showLogin && (
+       <div className="fixed inset-0 z-50 bg-gray-100">
+         <button
+           onClick={() => setShowLogin(false)}
+           className="absolute top-4 right-4 p-2 hover:bg-gray-200 rounded-lg z-10"
+           title="Close"
+         >
+           <X className="w-5 h-5" />
+         </button>
+         <LoginPage onSuccess={() => setShowLogin(false)} />
+       </div>
+     )}
+    </>
    );
  }
 

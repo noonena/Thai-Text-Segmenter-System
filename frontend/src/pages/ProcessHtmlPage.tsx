@@ -221,7 +221,7 @@ export default function ProcessHtmlPage({ settings }: Props) {
         <button
           onClick={handleRun}
           disabled={!rawHtml || isProcessing}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-black text-white disabled:bg-gray-400"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-black text-white disabled:bg-gray-400 enabled:hover:bg-gray-800 transition-colors"
         >
           {isProcessing ? (
             <Loader2 className="w-5 h-5 animate-spin" />
@@ -234,7 +234,7 @@ export default function ProcessHtmlPage({ settings }: Props) {
         <button
           onClick={handleClear}
           disabled={!selectedFile || isProcessing}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-400 text-slate-700 disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-400 text-slate-700 disabled:opacity-50 enabled:hover:bg-slate-100 transition-colors"
         >
           <Trash2 className="w-5 h-5" />
           Clear
