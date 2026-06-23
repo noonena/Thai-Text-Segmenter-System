@@ -1,24 +1,40 @@
 # Thai Text Segmenter System
 
-A Thai text segmentation system designed to process Thai text from plain text input and HTML files. The system segments Thai text into more readable word units, making it easier to analyse, display, and prepare for web-based content such as landing pages.
+A Thai text segmentation system designed to process Thai text from plain text input and HTML files. The system segments Thai text into more readable word units, making it easier to analyse, display and prepare for web-based content such as landing pages.
 
-Thai text segmentation is challenging because Thai sentences are often written without spaces between words. This project addresses that issue by combining machine learning, dictionary-based segmentation, and custom rule-based processing to produce more practical segmentation results.
+Thai text segmentation is challenging because Thai sentences are often written **without spaces between words.** This project addresses that issue by combining **machine learning**, **dictionary-based segmentation** and **custom rule-based processing** to produce more practical segmentation results.
 
 ---
 
-### Demo
+## 🎯 Project Purpose and Motivation
+
+This project was developed as my **Final Year Project**, focusing on **Thai text segmentation** and its practical use in **web layouts**.
+
+The idea came from **my experience in frontend development**, where I often had to deal with Thai text wrapping issues in website layouts. Thai text is commonly written without spaces between words, which can cause words to break incorrectly at the end of a line. This creates extra manual work when adjusting landing pages and other web content.
+
+While there are existing open-source Thai NLP tools, I noticed that they can still produce incorrect segmentation for certain words, especially in real website content. Since these tools are not always easy to retrain or customise for a specific frontend use case, manually adding words to a dictionary is often only a temporary solution.
+
+Therefore, the purpose of this project is to **better understand Thai text segmentation** and develop it into a practical **Thai text segmenter system**. The main focus is to identify likely **Thai word boundaries** and group Thai text into **suitable word units**, allowing Thai content to **wrap more naturally in web layouts**.
+
+This project also demonstrates how an **academic Thai text segmentation method** can be adapted into a usable full-stack application with **frontend**, **backend**, and **machine learning components**.
+
+---
+
+## 🎬 Demo
 [![YouTube Video qYPyIiI_O9k](https://utfs.io/f/nGnSqDveMsqxfCR27I8SwoegrUBJZjmC8iTa4NsIvbOnMyR6)](https://www.youtube.com/watch?v=qYPyIiI_O9k)
 
 ---
-## Before and After
+## 🔍 Before and After
 
-<img width="654" height="979" alt="beforeaftertext" src="https://github.com/user-attachments/assets/f72c9452-6293-4f53-a1e3-4140b641bd54" />
+<p align="center">
+  <img width="654" height="979" alt="beforeaftertext" src="https://github.com/user-attachments/assets/f72c9452-6293-4f53-a1e3-4140b641bd54" />
+</p>
 
 **Before:**
-In the original Thai text, line wrapping often breaks words incorrectly. For example, words such as `ภาษา` (*language*) and `รูปแบบ` (*format/pattern*) should stay together, but they may be split across lines in a web layout.
+In the original Thai text, line wrapping often **breaks words incorrectly.** For example, words such as `ภาษา` (*language*) and `รูปแบบ` (*format/pattern*) should stay together, but they may be split across lines in a web layout.
 
 **After:**
-The system identifies likely word boundaries and inserts spaces between segmented words. This helps the text wrap more naturally on websites. While the result is not perfect, achieving over 70% accuracy is already useful for improving Thai text readability in web layouts.
+The system identifies likely **word boundaries** and inserts spaces between segmented words. This helps the text **wrap more naturally** on websites. While the result is not perfect, achieving **over 70% accuracy** is already useful for improving Thai text readability in web layouts.
 
 ---
 
@@ -32,7 +48,7 @@ This project is not a direct copy of the thesis implementation. Instead, the the
 
 ---
 
-## Key Features
+## ✨ Key Features
 
 * Thai text segmentation from direct text input
 * HTML file upload and processing
@@ -41,14 +57,13 @@ This project is not a direct copy of the thesis implementation. Instead, the the
 
 ---
 
-## How the System Works
+## ⚙️ How the System Works
 
 The system follows a Thai text segmentation pipeline.
 
-<img width="543" height="662" alt="flowchart" src="https://github.com/user-attachments/assets/acb08ed9-b33d-4e74-899c-366493930577" />
-
-
-
+<p align="center">
+  <img width="543" height="662" alt="flowchart" src="https://github.com/user-attachments/assets/acb08ed9-b33d-4e74-899c-366493930577" />
+</p>
 
 The user can either paste Thai text directly into the text input page or upload an HTML file. For HTML files, the system parses the file, extracts the Thai text and then applies the segmentation pipeline.
 
@@ -56,7 +71,7 @@ The segmentation process uses a combination of machine learning and dictionary-b
 
 ---
 
-## Example
+## 🧪 Example
 
 ### Input
 
@@ -72,12 +87,12 @@ The segmentation process uses a combination of machine learning and dictionary-b
 
 ### Explanation
 
-Thai sentences are often written without spaces between words, which can cause awkward line breaks in landing pages and web layouts. This system segments Thai text into word units and inserts spaces so the text can wrap more naturally and remain readable across different screen sizes.
+The original Thai sentence does not contain spaces between words. The system identifies likely word boundaries and groups Thai text into word units, allowing the text to wrap more naturally in web layouts without breaking words incorrectly.
 
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 ### Frontend
 
@@ -93,16 +108,16 @@ Thai sentences are often written without spaces between words, which can cause a
 * scikit-learn
 
 
-### NLP and Machine Learning
+### Machine Learning
 
 * Custom CRF model for syllable and MTU segmentation
-* Custom Viterbi-based word segmentation
+* Custom k-best word segmentation
 * LST20 dictionary support for Thai word segmentation
 
 ---
 
 
-## Academic Reference
+## 📚 Academic Reference
 
 This project was inspired by the following academic work:
 
@@ -114,11 +129,11 @@ Retrieved: 15 October 2025.
 
 The thesis was used as a conceptual foundation for understanding Thai word segmentation, Minimum Text Unit segmentation, syllable segmentation, word segmentation, and Conditional Random Field-based processing.
 
-This project does not directly copy the thesis implementation. Instead, the methodology was studied, adapted, modified, and extended into a practical full-stack Thai text segmenter system with a web interface, HTML file processing, user history, database support, and custom application-level features.
+This project does not directly copy the thesis implementation. Instead, the methodology was studied, adapted, modified, and extended into a practical full-stack Thai text segmenter system with a web interface, HTML file processing, user history and custom application-level features.
 
 ---
 
-## Future Improvements
+## 🚀 Future Improvements
 
 * Improve segmentation accuracy with a larger training dataset
 * Improve HTML text extraction accuracy
@@ -127,15 +142,7 @@ This project does not directly copy the thesis implementation. Instead, the meth
 
 ---
 
-## Project Purpose
-
-The purpose of this project is to turn a Thai text segmentation concept into a practical and usable system. It demonstrates how academic NLP ideas can be adapted into a real web application with frontend, backend, database and machine learning components.
-
----
-
-# Thai Segmentation System Server
-
-## Development
+## 💻 Thai Segmentation System Server - Development
 
 ### Backend
 
